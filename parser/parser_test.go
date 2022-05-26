@@ -19,9 +19,19 @@ func parserTest(t *testing.T, src string, expected Node) {
 }
 
 func TestRecognizesNumber(t *testing.T) {
-	parserTest(t, `123`, Node{Program, Node{NumericLiteral, 123}})
+	parserTest(t, `123`, Node{Program, []Node{{ExpressionStatement, Node{NumericLiteral, 123}}}})
 }
 
 func TestRecognizesStrings(t *testing.T) {
-	parserTest(t, `"Hello World!"`, Node{Program, Node{StringLiteral, "Hello World!"}})
+	parserTest(t, `"Hello World!"`, Node{Program, []Node{{ExpressionStatement, Node{StringLiteral, "Hello World!"}}}})
+}
+
+func TestRecognizesStatements(t *testing.T) {
+	parserTest(
+		t,
+		`1;2;3;`,
+		Node{Program, []Node{
+			{ExpressionStatement, Node{NumericLiteral, 1}},
+			{ExpressionStatement, Node{NumericLiteral, 2}},
+			{ExpressionStatement, Node{NumericLiteral, 3}}}})
 }

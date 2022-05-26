@@ -9,9 +9,10 @@ import (
 type Type string
 
 const (
-	Program        Type = "Program"
-	NumericLiteral Type = "NumericLiteral"
-	StringLiteral  Type = "StringLiteral"
+	Program             Type = "Program"
+	NumericLiteral           = "NumericLiteral"
+	StringLiteral            = "StringLiteral"
+	ExpressionStatement      = "ExpressionStatement"
 )
 
 type Node struct {

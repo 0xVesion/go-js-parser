@@ -3,9 +3,10 @@ package tokenizer
 type Type string
 
 const (
-	None   Type = ""
-	Number      = "Number"
-	String      = "String"
+	None      Type = ""
+	Number         = "Number"
+	String         = "String"
+	Semicolon      = "Semicolon"
 )
 
 type specEntry struct {
@@ -17,4 +18,5 @@ var spec = []specEntry{
 	{None, []string{`\s+`, `\/\*[\s\S]*\*\/`, `\/\/.*`}},
 	{Number, []string{`\d+`}},
 	{String, []string{`\".*\"`, `\'.*\'`}},
+	{Semicolon, []string{`;`}},
 }
