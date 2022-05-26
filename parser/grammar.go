@@ -7,6 +7,10 @@ import (
 	"github.com/0xvesion/go-parser/tokenizer"
 )
 
+// Entry point of the program.
+// Program
+// 	: Literal
+// 	;
 func (p *parser) program() (Node, error) {
 	node, err := p.literal()
 	if err != nil {
@@ -16,6 +20,10 @@ func (p *parser) program() (Node, error) {
 	return Node{Program, node}, nil
 }
 
+// Literal
+// 	: NumericLiteral
+// 	| StringLiteral
+// 	;
 func (p *parser) literal() (Node, error) {
 	switch p.lookAhead.Type {
 	case tokenizer.Number:
@@ -28,6 +36,9 @@ func (p *parser) literal() (Node, error) {
 	return Node{}, fmt.Errorf("invalid literal type %v", p.lookAhead.Type)
 }
 
+// NumericLiteral
+// 	: Number
+// 	;
 func (p *parser) numericLiteral() (Node, error) {
 	token, err := p.consume(tokenizer.Number)
 	if err != nil {
@@ -45,6 +56,9 @@ func (p *parser) numericLiteral() (Node, error) {
 	}, nil
 }
 
+// StringLiteral
+// 	: String
+// 	;
 func (p *parser) stringLiteral() (Node, error) {
 	token, err := p.consume(tokenizer.String)
 
