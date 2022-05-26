@@ -34,6 +34,14 @@ func TestRecognizesNumber(t *testing.T) {
 	tokenizerTest(t, "123", []Token{{Number, "123"}})
 }
 
+func TestSkipWhitespace(t *testing.T) {
+	tokenizerTest(
+		t,
+		"   1 2 3   ",
+		[]Token{{Number, "1"}, {Number, "2"}, {Number, "3"}, {}},
+	)
+}
+
 func TestRecognizesStrings(t *testing.T) {
 	tokenizerTest(t, `'Hello World!'`, []Token{{String, `'Hello World!'`}})
 	tokenizerTest(t, `"Hello World!"`, []Token{{String, `"Hello World!"`}})

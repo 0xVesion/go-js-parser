@@ -51,8 +51,11 @@ func (t *tokenizer) Next() (Token, error) {
 			match := s[loc[0]:loc[1]]
 			t.cursor += loc[1]
 
-			return Token{current.Type, match}, nil
+			if current.Type == None {
+				return t.Next()
+			}
 
+			return Token{current.Type, match}, nil
 		}
 	}
 
