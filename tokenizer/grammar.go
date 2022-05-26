@@ -1,15 +1,19 @@
 package tokenizer
 
-type Type int
+type Type string
 
 const (
-	Number Type = iota
-	Identifier
-	Symbol
+	None   Type = ""
+	Number      = "Number"
+	String      = "String"
 )
 
-var grammar = map[Type]string{
-	Number:     `\d+`,
-	Identifier: `\w+`,
-	Symbol:     `[\+-/*]`,
+type Grammar struct {
+	Type
+	Regexp []string
+}
+
+var grammar = []Grammar{
+	{Number, []string{`\d+`}},
+	{String, []string{`\".*\"`, `\'.*\'`}},
 }
