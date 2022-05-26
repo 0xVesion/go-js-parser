@@ -18,27 +18,12 @@ type tokenizer struct {
 type Tokenizer interface {
 	HasNext() bool
 	Next() (Token, error)
-	All() ([]Token, error)
 }
 
 func New(src string) Tokenizer {
 	return &tokenizer{
 		src: src,
 	}
-}
-
-func (t *tokenizer) All() ([]Token, error) {
-	tokens := []Token{}
-	for t.HasNext() {
-		token, err := t.Next()
-		if err != nil {
-			return nil, err
-		}
-		tokens = append(tokens, token)
-
-	}
-
-	return tokens, nil
 }
 
 func (t *tokenizer) HasNext() bool {

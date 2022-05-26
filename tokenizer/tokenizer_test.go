@@ -5,8 +5,22 @@ import (
 	"testing"
 )
 
+func all(t *tokenizer) ([]Token, error) {
+	tokens := []Token{}
+	for t.HasNext() {
+		token, err := t.Next()
+		if err != nil {
+			return nil, err
+		}
+		tokens = append(tokens, token)
+
+	}
+
+	return tokens, nil
+}
+
 func tokenizerTest(t *testing.T, src string, expected []Token) {
-	result, err := New(src).All()
+	result, err := all(New(src).(*tokenizer))
 	if err != nil {
 		t.Error(err)
 	}
