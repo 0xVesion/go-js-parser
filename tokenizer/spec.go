@@ -8,12 +8,13 @@ const (
 	String      = "String"
 )
 
-type Grammar struct {
+type specEntry struct {
 	Type
 	Regexp []string
 }
 
-var grammar = []Grammar{
+var spec = []specEntry{
+	{None, []string{`\s+`}},
 	{Number, []string{`\d+`}},
 	{String, []string{`\".*\"`, `\'.*\'`}},
 }

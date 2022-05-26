@@ -36,7 +36,7 @@ func (t *tokenizer) Next() (Token, error) {
 	}
 
 	s := t.src[t.cursor:]
-	for _, current := range grammar {
+	for _, current := range spec {
 		for _, expr := range current.Regexp {
 			r, err := regexp.Compile(expr)
 			if err != nil {
