@@ -42,6 +42,23 @@ func TestSkipWhitespace(t *testing.T) {
 	)
 }
 
+func TestSkipComments(t *testing.T) {
+	tokenizerTest(
+		t,
+		"123/* foobar */321",
+		[]Token{{Number, "123"}, {Number, "321"}},
+	)
+
+	tokenizerTest(
+		t,
+		`
+		123 // foobar
+		// foobar
+		321`,
+		[]Token{{Number, "123"}, {Number, "321"}},
+	)
+}
+
 func TestRecognizesStrings(t *testing.T) {
 	tokenizerTest(t, `'Hello World!'`, []Token{{String, `'Hello World!'`}})
 	tokenizerTest(t, `"Hello World!"`, []Token{{String, `"Hello World!"`}})

@@ -14,7 +14,7 @@ type specEntry struct {
 }
 
 var spec = []specEntry{
-	{None, []string{`\s+`}},
+	{None, []string{`\s+`, `\/\*[\s\S]*\*\/`, `\/\/.*`}},
 	{Number, []string{`\d+`}},
 	{String, []string{`\".*\"`, `\'.*\'`}},
 }
