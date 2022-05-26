@@ -20,25 +20,7 @@ func TestRecognizesNumber(t *testing.T) {
 	tokenizerTest(t, "123", []Token{{Number, "123"}})
 }
 
-func TestRecognizesIdentifiers(t *testing.T) {
-	tokenizerTest(t, "test", []Token{{Identifier, "test"}})
-}
-
-func TestRecognizesIdentifiersWithNumbers(t *testing.T) {
-	tokenizerTest(t, "test123", []Token{{Identifier, "test123"}})
-}
-
-func TestRecognizesNumbersAndIdentifiers(t *testing.T) {
-	tokenizerTest(t, "123test123", []Token{{Number, "123"}, {Identifier, "test123"}})
-}
-
-func TestRecognizesSymbols(t *testing.T) {
-	tokenizerTest(t, "+", []Token{{Symbol, "+"}})
-	tokenizerTest(t, "-", []Token{{Symbol, "-"}})
-	tokenizerTest(t, "*", []Token{{Symbol, "*"}})
-	tokenizerTest(t, "/", []Token{{Symbol, "/"}})
-}
-
-func TestRecognizesNumbersAndSymbols(t *testing.T) {
-	tokenizerTest(t, "1+1", []Token{{Number, "1"}, {Symbol, "+"}, {Number, "1"}})
+func TestRecognizesStrings(t *testing.T) {
+	tokenizerTest(t, `'Hello World!'`, []Token{{String, `'Hello World!'`}})
+	tokenizerTest(t, `"Hello World!"`, []Token{{String, `"Hello World!"`}})
 }
