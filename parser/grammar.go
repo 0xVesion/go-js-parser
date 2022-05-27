@@ -11,8 +11,8 @@ import (
 // Program
 // 	: StatementList
 // 	;
-func (p *parser) program() program {
-	return newProgram(p.statementList(tokenizer.None)...)
+func (p *parser) program() interface{} {
+	return p.factory.Program(p.statementList(tokenizer.None)...)
 }
 
 // StatementList
@@ -48,34 +48,34 @@ func (p *parser) statement() interface{} {
 // EmptyStatement
 // 	: ';'
 // 	;
-func (p *parser) emptyStatement() emptyStatement {
+func (p *parser) emptyStatement() interface{} {
 	p.consume(tokenizer.Semicolon)
 
-	return newEmptyStatement()
+	return p.factory.EmptyStatement()
 }
 
 // BlockStatement
 // 	: '{' StatementList '}'
 // 	;
-func (p *parser) blockStatement() blockStatement {
+func (p *parser) blockStatement() interface{} {
 	p.consume(tokenizer.OpeningCurlyBrace)
 
 	sl := p.statementList(tokenizer.ClosingCurlyBrace)
 
 	p.consume(tokenizer.ClosingCurlyBrace)
 
-	return newBlockStatement(sl...)
+	return p.factory.BlockStatement(sl...)
 }
 
 // ExpressionStatment
 // 	: Expression ';'
 // 	;
-func (p *parser) expressionStatment() expressionStatement {
+func (p *parser) expressionStatment() interface{} {
 	e := p.expression()
 
 	p.consume(tokenizer.Semicolon)
 
-	return newExpressionStatement(e)
+	return p.factory.ExpressionStatement(e)
 }
 
 // Expression
@@ -103,7 +103,7 @@ func (p *parser) literal() interface{} {
 // NumericLiteral
 // 	: Number
 // 	;
-func (p *parser) numericLiteral() literal[int] {
+func (p *parser) numericLiteral() interface{} {
 	token := p.consume(tokenizer.Number)
 
 	value, err := strconv.Atoi(token.Value)
@@ -111,14 +111,14 @@ func (p *parser) numericLiteral() literal[int] {
 		panic(err)
 	}
 
-	return newNumericLiteral(value)
+	return p.factory.NumericLiteral(value)
 }
 
 // StringLiteral
 // 	: String
 // 	;
-func (p *parser) stringLiteral() literal[string] {
+func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)
 
-	return newStringLiteral(token.Value[1 : len(token.Value)-1])
+	return p.factory.StringLiteral(token.Value[1 : len(token.Value)-1])
 }

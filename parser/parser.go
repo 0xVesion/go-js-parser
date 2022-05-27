@@ -7,15 +7,16 @@ import (
 )
 
 type Parser interface {
-	Parse() (program, error)
+	Parse() (interface{}, error)
 }
 
 type parser struct {
 	t         tokenizer.Tokenizer
+	factory   AstFactory
 	lookAhead tokenizer.Token
 }
 
-func New(t tokenizer.Tokenizer) Parser {
+func New(t tokenizer.Tokenizer, factory AstFactory) Parser {
 	lookAhead, err := t.Next()
 	if err != nil {
 		panic(err)
@@ -24,10 +25,11 @@ func New(t tokenizer.Tokenizer) Parser {
 	return &parser{
 		t:         t,
 		lookAhead: lookAhead,
+		factory:   factory,
 	}
 }
 
-func (p *parser) Parse() (n program, err error) {
+func (p *parser) Parse() (n interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)

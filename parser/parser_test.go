@@ -1,14 +1,18 @@
-package parser
+package parser_test
 
 import (
 	"encoding/json"
 	"testing"
 
+	"github.com/0xvesion/go-parser/parser"
+	jsonastfactory "github.com/0xvesion/go-parser/parser/json_ast_factory"
 	"github.com/0xvesion/go-parser/tokenizer"
 )
 
-func parserTest(t *testing.T, src string, expected program) {
-	result, err := New(tokenizer.New(src)).Parse()
+var factory = jsonastfactory.New()
+
+func parserTest(t *testing.T, src string, expected interface{}) {
+	result, err := parser.New(tokenizer.New(src), factory).Parse()
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,21 +32,21 @@ func parserTest(t *testing.T, src string, expected program) {
 }
 
 func TestRecognizesNumber(t *testing.T) {
-	parserTest(t, `123;`, newProgram(newExpressionStatement(newNumericLiteral(123))))
+	parserTest(t, `123;`, factory.Program(factory.ExpressionStatement(factory.NumericLiteral(123))))
 }
 
 func TestRecognizesStrings(t *testing.T) {
-	parserTest(t, `"Hello World!";`, newProgram(newExpressionStatement(newStringLiteral("Hello World!"))))
+	parserTest(t, `"Hello World!";`, factory.Program(factory.ExpressionStatement(factory.StringLiteral("Hello World!"))))
 }
 
 func TestRecognizesStatements(t *testing.T) {
 	parserTest(
 		t,
 		`1;2;3;`,
-		newProgram(
-			newExpressionStatement(newNumericLiteral(1)),
-			newExpressionStatement(newNumericLiteral(2)),
-			newExpressionStatement(newNumericLiteral(3)),
+		factory.Program(
+			factory.ExpressionStatement(factory.NumericLiteral(1)),
+			factory.ExpressionStatement(factory.NumericLiteral(2)),
+			factory.ExpressionStatement(factory.NumericLiteral(3)),
 		))
 }
 
@@ -50,7 +54,7 @@ func TestRecognizesBlockStatement(t *testing.T) {
 	parserTest(
 		t,
 		`{}`,
-		newProgram(newBlockStatement([]interface{}{}...)))
+		factory.Program(factory.BlockStatement([]interface{}{}...)))
 
 	parserTest(
 		t,
@@ -60,10 +64,10 @@ func TestRecognizesBlockStatement(t *testing.T) {
 				123;
 			}
 		}`,
-		newProgram(newBlockStatement(
-			newExpressionStatement(newStringLiteral("Hello World!")),
-			newBlockStatement(
-				newExpressionStatement(newNumericLiteral(123)),
+		factory.Program(factory.BlockStatement(
+			factory.ExpressionStatement(factory.StringLiteral("Hello World!")),
+			factory.BlockStatement(
+				factory.ExpressionStatement(factory.NumericLiteral(123)),
 			),
 		)))
 
@@ -73,10 +77,10 @@ func TestRecognizesBlockStatement(t *testing.T) {
 			123;
 			"Hello World!";
 		}`,
-		newProgram(
-			newBlockStatement(
-				newExpressionStatement(newNumericLiteral(123)),
-				newExpressionStatement(newStringLiteral("Hello World!")),
+		factory.Program(
+			factory.BlockStatement(
+				factory.ExpressionStatement(factory.NumericLiteral(123)),
+				factory.ExpressionStatement(factory.StringLiteral("Hello World!")),
 			),
 		),
 	)
@@ -86,7 +90,7 @@ func TestEmptyStatement(t *testing.T) {
 	parserTest(
 		t,
 		`;`,
-		newProgram(
-			newEmptyStatement(),
+		factory.Program(
+			factory.EmptyStatement(),
 		))
 }

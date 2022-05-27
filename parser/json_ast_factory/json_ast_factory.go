@@ -1,4 +1,6 @@
-package parser
+package jsonastfactory
+
+import "github.com/0xvesion/go-parser/parser"
 
 type Type string
 
@@ -11,26 +13,23 @@ const (
 	EmptyStatement           = "EmptyStatement"
 )
 
+type factory struct{}
+
+func New() parser.AstFactory {
+	return factory{}
+}
+
 type literal[T any] struct {
 	Type
 	Value T
 }
 
-func newNumericLiteral(val int) literal[int] {
+func (factory) NumericLiteral(val int) interface{} {
 	return literal[int]{NumericLiteral, val}
 }
 
-func newStringLiteral(val string) literal[string] {
+func (factory) StringLiteral(val string) interface{} {
 	return literal[string]{StringLiteral, val}
-}
-
-type expressionStatement struct {
-	Type
-	Expression interface{}
-}
-
-func newExpressionStatement(exp interface{}) expressionStatement {
-	return expressionStatement{ExpressionStatement, exp}
 }
 
 type blockStatement struct {
@@ -38,7 +37,7 @@ type blockStatement struct {
 	Body []interface{}
 }
 
-func newBlockStatement(sl ...interface{}) blockStatement {
+func (factory) BlockStatement(sl ...interface{}) interface{} {
 	return blockStatement{BlockStatement, sl}
 }
 
@@ -47,7 +46,7 @@ type program struct {
 	Body []interface{}
 }
 
-func newProgram(sl ...interface{}) program {
+func (factory) Program(sl ...interface{}) interface{} {
 	return program{Program, sl}
 }
 
@@ -55,6 +54,15 @@ type emptyStatement struct {
 	Type
 }
 
-func newEmptyStatement() emptyStatement {
+func (factory) EmptyStatement() interface{} {
 	return emptyStatement{EmptyStatement}
+}
+
+type expressionStatement struct {
+	Type
+	Expression interface{}
+}
+
+func (factory) ExpressionStatement(exp interface{}) interface{} {
+	return expressionStatement{ExpressionStatement, exp}
 }
