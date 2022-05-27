@@ -12,9 +12,7 @@ import (
 // 	: StatementList
 // 	;
 func (p *parser) program() program {
-	sl := p.statementList(tokenizer.None)
-
-	return newProgram(sl...)
+	return newProgram(p.statementList(tokenizer.None)...)
 }
 
 // StatementList
@@ -25,8 +23,7 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
 	sl := []interface{}{}
 
 	for p.lookAhead.Type != endLookahead {
-		statement := p.statement()
-		sl = append(sl, statement)
+		sl = append(sl, p.statement())
 	}
 
 	return sl
@@ -35,14 +32,26 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
 // Statement
 // 	: ExpressionStatment
 // 	| BlockStatement
+// 	| EmptyStatement
 // 	;
 func (p *parser) statement() interface{} {
 	switch p.lookAhead.Type {
 	case tokenizer.OpeningCurlyBrace:
 		return p.blockStatement()
+	case tokenizer.Semicolon:
+		return p.emptyStatement()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// EmptyStatement
+// 	: ';'
+// 	;
+func (p *parser) emptyStatement() emptyStatement {
+	p.consume(tokenizer.Semicolon)
+
+	return newEmptyStatement()
 }
 
 // BlockStatement

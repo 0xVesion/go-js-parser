@@ -6,16 +6,6 @@ import (
 	"github.com/0xvesion/go-parser/tokenizer"
 )
 
-type Type string
-
-const (
-	Program             Type = "Program"
-	NumericLiteral           = "NumericLiteral"
-	StringLiteral            = "StringLiteral"
-	ExpressionStatement      = "ExpressionStatement"
-	BlockStatement           = "BlockStatement"
-)
-
 type Parser interface {
 	Parse() (program, error)
 }

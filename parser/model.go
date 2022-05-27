@@ -1,5 +1,16 @@
 package parser
 
+type Type string
+
+const (
+	Program             Type = "Program"
+	NumericLiteral           = "NumericLiteral"
+	StringLiteral            = "StringLiteral"
+	ExpressionStatement      = "ExpressionStatement"
+	BlockStatement           = "BlockStatement"
+	EmptyStatement           = "EmptyStatement"
+)
+
 type literal[T any] struct {
 	Type
 	Value T
@@ -38,4 +49,12 @@ type program struct {
 
 func newProgram(sl ...interface{}) program {
 	return program{Program, sl}
+}
+
+type emptyStatement struct {
+	Type
+}
+
+func newEmptyStatement() emptyStatement {
+	return emptyStatement{EmptyStatement}
 }

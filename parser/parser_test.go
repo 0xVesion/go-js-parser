@@ -81,3 +81,12 @@ func TestRecognizesBlockStatement(t *testing.T) {
 		),
 	)
 }
+
+func TestEmptyStatement(t *testing.T) {
+	parserTest(
+		t,
+		`;`,
+		newProgram(
+			newEmptyStatement(),
+		))
+}
