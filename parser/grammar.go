@@ -11,18 +11,18 @@ import (
 // Program
 // 	: StatementList
 // 	;
-func (p *parser) program() Node {
-	node := p.statementList(tokenizer.None)
+func (p *parser) program() program {
+	sl := p.statementList(tokenizer.None)
 
-	return Node{Program, node}
+	return newProgram(sl...)
 }
 
 // StatementList
 // 	: Statement
 // 	| StatementList Statement
 // 	;
-func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
-	sl := []Node{}
+func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
+	sl := []interface{}{}
 
 	for p.lookAhead.Type != endLookahead {
 		statement := p.statement()
@@ -36,7 +36,7 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
 // 	: ExpressionStatment
 // 	| BlockStatement
 // 	;
-func (p *parser) statement() Node {
+func (p *parser) statement() interface{} {
 	switch p.lookAhead.Type {
 	case tokenizer.OpeningCurlyBrace:
 		return p.blockStatement()
@@ -48,32 +48,31 @@ func (p *parser) statement() Node {
 // BlockStatement
 // 	: '{' StatementList '}'
 // 	;
-func (p *parser) blockStatement() Node {
+func (p *parser) blockStatement() blockStatement {
 	p.consume(tokenizer.OpeningCurlyBrace)
 
 	sl := p.statementList(tokenizer.ClosingCurlyBrace)
 
 	p.consume(tokenizer.ClosingCurlyBrace)
 
-	return Node{BlockStatement, sl}
+	return newBlockStatement(sl...)
 }
 
 // ExpressionStatment
 // 	: Expression ';'
 // 	;
-func (p *parser) expressionStatment() Node {
+func (p *parser) expressionStatment() expressionStatement {
 	e := p.expression()
 
 	p.consume(tokenizer.Semicolon)
 
-	return Node{ExpressionStatement, e}
-
+	return newExpressionStatement(e)
 }
 
 // Expression
 // 	: Literal
 // 	;
-func (p *parser) expression() Node {
+func (p *parser) expression() interface{} {
 	return p.literal()
 }
 
@@ -81,7 +80,7 @@ func (p *parser) expression() Node {
 // 	: NumericLiteral
 // 	| StringLiteral
 // 	;
-func (p *parser) literal() Node {
+func (p *parser) literal() interface{} {
 	switch p.lookAhead.Type {
 	case tokenizer.Number:
 		return p.numericLiteral()
@@ -95,7 +94,7 @@ func (p *parser) literal() Node {
 // NumericLiteral
 // 	: Number
 // 	;
-func (p *parser) numericLiteral() Node {
+func (p *parser) numericLiteral() literal[int] {
 	token := p.consume(tokenizer.Number)
 
 	value, err := strconv.Atoi(token.Value)
@@ -103,20 +102,14 @@ func (p *parser) numericLiteral() Node {
 		panic(err)
 	}
 
-	return Node{
-		NumericLiteral,
-		value,
-	}
+	return newNumericLiteral(value)
 }
 
 // StringLiteral
 // 	: String
 // 	;
-func (p *parser) stringLiteral() Node {
+func (p *parser) stringLiteral() literal[string] {
 	token := p.consume(tokenizer.String)
 
-	return Node{
-		StringLiteral,
-		token.Value[1 : len(token.Value)-1],
-	}
+	return newStringLiteral(token.Value[1 : len(token.Value)-1])
 }

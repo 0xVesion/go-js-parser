@@ -16,13 +16,8 @@ const (
 	BlockStatement           = "BlockStatement"
 )
 
-type Node struct {
-	Type
-	Value interface{}
-}
-
 type Parser interface {
-	Parse() (Node, error)
+	Parse() (program, error)
 }
 
 type parser struct {
@@ -42,7 +37,7 @@ func New(t tokenizer.Tokenizer) Parser {
 	}
 }
 
-func (p *parser) Parse() (n Node, err error) {
+func (p *parser) Parse() (n program, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)

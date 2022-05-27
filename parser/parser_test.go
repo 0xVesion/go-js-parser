@@ -1,46 +1,56 @@
 package parser
 
 import (
-	"reflect"
+	"encoding/json"
 	"testing"
 
 	"github.com/0xvesion/go-parser/tokenizer"
 )
 
-func parserTest(t *testing.T, src string, expected Node) {
+func parserTest(t *testing.T, src string, expected program) {
 	result, err := New(tokenizer.New(src)).Parse()
 	if err != nil {
 		t.Error(err)
 	}
 
-	if !reflect.DeepEqual(expected, result) {
-		t.Errorf("Unexpected result. want: %v got: %v", expected, result)
+	toJson := func(x interface{}) string {
+		j, _ := json.MarshalIndent(x, "", "  ")
+
+		return string(j)
+	}
+
+	expectedJson := toJson(expected)
+	resultJson := toJson(result)
+
+	if expectedJson != resultJson {
+		t.Errorf("Unexpected result. \nwant: %v \ngot: %v", expectedJson, resultJson)
 	}
 }
 
 func TestRecognizesNumber(t *testing.T) {
-	parserTest(t, `123;`, Node{Program, []Node{{ExpressionStatement, Node{NumericLiteral, 123}}}})
+	parserTest(t, `123;`, newProgram(newExpressionStatement(newNumericLiteral(123))))
 }
 
 func TestRecognizesStrings(t *testing.T) {
-	parserTest(t, `"Hello World!";`, Node{Program, []Node{{ExpressionStatement, Node{StringLiteral, "Hello World!"}}}})
+	parserTest(t, `"Hello World!";`, newProgram(newExpressionStatement(newStringLiteral("Hello World!"))))
 }
 
 func TestRecognizesStatements(t *testing.T) {
 	parserTest(
 		t,
 		`1;2;3;`,
-		Node{Program, []Node{
-			{ExpressionStatement, Node{NumericLiteral, 1}},
-			{ExpressionStatement, Node{NumericLiteral, 2}},
-			{ExpressionStatement, Node{NumericLiteral, 3}}}})
+		newProgram(
+			newExpressionStatement(newNumericLiteral(1)),
+			newExpressionStatement(newNumericLiteral(2)),
+			newExpressionStatement(newNumericLiteral(3)),
+		))
 }
 
 func TestRecognizesBlockStatement(t *testing.T) {
 	parserTest(
 		t,
 		`{}`,
-		Node{Program, []Node{{BlockStatement, []Node{}}}})
+		newProgram(newBlockStatement([]interface{}{}...)))
 
 	parserTest(
 		t,
@@ -50,12 +60,12 @@ func TestRecognizesBlockStatement(t *testing.T) {
 				123;
 			}
 		}`,
-		Node{Program, []Node{{BlockStatement, []Node{
-			{ExpressionStatement, Node{StringLiteral, "Hello World!"}},
-			{BlockStatement, []Node{
-				{ExpressionStatement, Node{NumericLiteral, 123}},
-			}},
-		}}}})
+		newProgram(newBlockStatement(
+			newExpressionStatement(newStringLiteral("Hello World!")),
+			newBlockStatement(
+				newExpressionStatement(newNumericLiteral(123)),
+			),
+		)))
 
 	parserTest(
 		t,
@@ -63,8 +73,11 @@ func TestRecognizesBlockStatement(t *testing.T) {
 			123;
 			"Hello World!";
 		}`,
-		Node{Program, []Node{{BlockStatement, []Node{
-			{ExpressionStatement, Node{NumericLiteral, 123}},
-			{ExpressionStatement, Node{StringLiteral, "Hello World!"}},
-		}}}})
+		newProgram(
+			newBlockStatement(
+				newExpressionStatement(newNumericLiteral(123)),
+				newExpressionStatement(newStringLiteral("Hello World!")),
+			),
+		),
+	)
 }
