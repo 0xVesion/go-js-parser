@@ -11,53 +11,69 @@ import (
 // Program
 // 	: StatementList
 // 	;
-func (p *parser) program() (Node, error) {
-	node, err := p.statementList()
-	if err != nil {
-		return Node{}, err
-	}
+func (p *parser) program() Node {
+	node := p.statementList(tokenizer.None)
 
-	return Node{Program, node}, nil
+	return Node{Program, node}
 }
 
 // StatementList
 // 	: Statement
 // 	| StatementList Statement
 // 	;
-func (p *parser) statementList() ([]Node, error) {
+func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
 	sl := []Node{}
 
-	for p.lookAhead.Type != tokenizer.None {
-		statement, _ := p.statement()
+	for p.lookAhead.Type != endLookahead {
+		statement := p.statement()
 		sl = append(sl, statement)
 	}
 
-	return sl, nil
+	return sl
 }
 
 // Statement
 // 	: ExpressionStatment
+// 	| BlockStatement
 // 	;
-func (p *parser) statement() (Node, error) {
-	return p.expressionStatment()
+func (p *parser) statement() Node {
+	switch p.lookAhead.Type {
+	case tokenizer.OpeningCurlyBrace:
+		return p.blockStatement()
+	default:
+		return p.expressionStatment()
+	}
+}
+
+// BlockStatement
+// 	: '{' StatementList '}'
+// 	;
+func (p *parser) blockStatement() Node {
+	p.consume(tokenizer.OpeningCurlyBrace)
+
+	sl := p.statementList(tokenizer.ClosingCurlyBrace)
+
+	p.consume(tokenizer.ClosingCurlyBrace)
+
+	return Node{BlockStatement, sl}
 }
 
 // ExpressionStatment
 // 	: Expression ';'
 // 	;
-func (p *parser) expressionStatment() (Node, error) {
-	e, _ := p.expression()
+func (p *parser) expressionStatment() Node {
+	e := p.expression()
 
 	p.consume(tokenizer.Semicolon)
 
-	return Node{ExpressionStatement, e}, nil
+	return Node{ExpressionStatement, e}
 
 }
 
 // Expression
 // 	: Literal
 // 	;
-func (p *parser) expression() (Node, error) {
+func (p *parser) expression() Node {
 	return p.literal()
 }
 
@@ -65,50 +81,42 @@ func (p *parser) expression() (Node, error) {
 // 	: NumericLiteral
 // 	| StringLiteral
 // 	;
-func (p *parser) literal() (Node, error) {
+func (p *parser) literal() Node {
 	switch p.lookAhead.Type {
 	case tokenizer.Number:
 		return p.numericLiteral()
 	case tokenizer.String:
 		return p.stringLiteral()
-
 	}
 
-	return Node{}, fmt.Errorf("invalid literal type %v", p.lookAhead.Type)
+	panic(fmt.Errorf("invalid literal type %v", p.lookAhead.Type))
 }
 
 // NumericLiteral
 // 	: Number
 // 	;
-func (p *parser) numericLiteral() (Node, error) {
-	token, err := p.consume(tokenizer.Number)
-	if err != nil {
-		return Node{}, err
-	}
+func (p *parser) numericLiteral() Node {
+	token := p.consume(tokenizer.Number)
 
 	value, err := strconv.Atoi(token.Value)
 	if err != nil {
-		return Node{}, err
+		panic(err)
 	}
 
 	return Node{
 		NumericLiteral,
 		value,
-	}, nil
+	}
 }
 
 // StringLiteral
 // 	: String
 // 	;
-func (p *parser) stringLiteral() (Node, error) {
-	token, err := p.consume(tokenizer.String)
-
-	if err != nil {
-		return Node{}, err
-	}
+func (p *parser) stringLiteral() Node {
+	token := p.consume(tokenizer.String)
 
 	return Node{
 		StringLiteral,
 		token.Value[1 : len(token.Value)-1],
-	}, nil
+	}
 }

@@ -13,6 +13,7 @@ const (
 	NumericLiteral           = "NumericLiteral"
 	StringLiteral            = "StringLiteral"
 	ExpressionStatement      = "ExpressionStatement"
+	BlockStatement           = "BlockStatement"
 )
 
 type Node struct {
@@ -41,22 +42,30 @@ func New(t tokenizer.Tokenizer) Parser {
 	}
 }
 
-func (p *parser) Parse() (Node, error) {
-	return p.program()
+func (p *parser) Parse() (n Node, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+
+	n = p.program()
+
+	return
 }
 
-func (p *parser) consume(t tokenizer.Type) (tokenizer.Token, error) {
+func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 	token := p.lookAhead
 
 	if token.Type != t {
-		return tokenizer.Token{}, fmt.Errorf("Unexpected token type %s", token.Type)
+		panic(fmt.Errorf("Unexpected token type. want: %s got: %s", t, token.Type))
 	}
 
 	lookAhead, err := p.t.Next()
 	if err != nil {
-		return tokenizer.Token{}, err
+		panic(err)
 	}
 	p.lookAhead = lookAhead
 
-	return token, err
+	return token
 }
