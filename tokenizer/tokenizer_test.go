@@ -63,3 +63,17 @@ func TestRecognizesStrings(t *testing.T) {
 	tokenizerTest(t, `'Hello World!'`, []Token{{String, `'Hello World!'`}})
 	tokenizerTest(t, `"Hello World!"`, []Token{{String, `"Hello World!"`}})
 }
+
+func TestRecognizesSemicolon(t *testing.T) {
+	tokenizerTest(t, `;`, []Token{{Semicolon, `;`}})
+}
+
+func TestRecognizesCurlyBraces(t *testing.T) {
+	tokenizerTest(t, `{`, []Token{{OpeningCurlyBrace, `{`}})
+	tokenizerTest(t, `}`, []Token{{ClosingCurlyBrace, `}`}})
+}
+
+func TestRecognizesAdditiveOperators(t *testing.T) {
+	tokenizerTest(t, `+`, []Token{{AdditiveOperator, `+`}})
+	tokenizerTest(t, `-`, []Token{{AdditiveOperator, `-`}})
+}
