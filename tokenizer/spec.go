@@ -9,6 +9,7 @@ const (
 	Semicolon              = "Semicolon"
 	OpeningCurlyBrace      = "OpeningCurlyBrace"
 	ClosingCurlyBrace      = "ClosingCurlyBrace"
+	AdditiveOperator       = "AdditiveOperator"
 )
 
 type specEntry struct {
@@ -23,4 +24,5 @@ var spec = []specEntry{
 	{Semicolon, []string{`;`}},
 	{OpeningCurlyBrace, []string{`{`}},
 	{ClosingCurlyBrace, []string{`}`}},
+	{AdditiveOperator, []string{`[\+-]`}},
 }

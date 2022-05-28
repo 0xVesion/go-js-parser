@@ -79,10 +79,27 @@ func (p *parser) expressionStatment() interface{} {
 }
 
 // Expression
-// 	: Literal
+// 	: AdditiveExpression
 // 	;
 func (p *parser) expression() interface{} {
-	return p.literal()
+	return p.additiveExpression()
+}
+
+// AdditiveExpression
+// 	: Literal
+// 	| AdditiveExpression AdditiveOperator Literal
+// 	;
+func (p *parser) additiveExpression() interface{} {
+	left := p.literal()
+
+	for p.lookAhead.Type == tokenizer.AdditiveOperator {
+		operator := p.consume(tokenizer.AdditiveOperator)
+		right := p.literal()
+
+		left = p.factory.AdditiveExpression(operator.Value, left, right)
+	}
+
+	return left
 }
 
 // Literal

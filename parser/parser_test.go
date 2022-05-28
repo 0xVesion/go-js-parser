@@ -94,3 +94,42 @@ func TestEmptyStatement(t *testing.T) {
 			factory.EmptyStatement(),
 		))
 }
+
+func TestAdditiveExpression(t *testing.T) {
+	parserTest(
+		t,
+		`1+1;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.AdditiveExpression(
+				"+",
+				factory.NumericLiteral(1),
+				factory.NumericLiteral(1),
+			)),
+		))
+
+	parserTest(
+		t,
+		`1-1;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.AdditiveExpression(
+				"-",
+				factory.NumericLiteral(1),
+				factory.NumericLiteral(1),
+			)),
+		))
+
+	parserTest(
+		t,
+		`1+1-2;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.AdditiveExpression(
+				"-",
+				factory.AdditiveExpression(
+					"+",
+					factory.NumericLiteral(1),
+					factory.NumericLiteral(1),
+				),
+				factory.NumericLiteral(2),
+			)),
+		))
+}

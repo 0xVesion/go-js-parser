@@ -7,4 +7,5 @@ type AstFactory interface {
 	BlockStatement(...interface{}) interface{}
 	Program(...interface{}) interface{}
 	EmptyStatement() interface{}
+	AdditiveExpression(operator string, left interface{}, right interface{}) interface{}
 }

@@ -59,5 +59,5 @@ func (t *tokenizer) Next() (Token, error) {
 		}
 	}
 
-	return Token{}, fmt.Errorf("Unknown token")
+	return Token{}, fmt.Errorf("Unknown token: %s", s)
 }
