@@ -11,7 +11,7 @@ const (
 	ExpressionStatement      = "ExpressionStatement"
 	BlockStatement           = "BlockStatement"
 	EmptyStatement           = "EmptyStatement"
-	AdditiveExpression       = "AdditiveExpression"
+	BinaryExpression         = "BinaryExpression"
 )
 
 type factory struct{}
@@ -68,11 +68,11 @@ func (factory) ExpressionStatement(exp interface{}) interface{} {
 	return expressionStatement{ExpressionStatement, exp}
 }
 
-func (factory) AdditiveExpression(operator string, left interface{}, right interface{}) interface{} {
-	return additiveExpression{AdditiveExpression, operator, left, right}
+func (factory) BinaryExpression(operator string, left interface{}, right interface{}) interface{} {
+	return binaryExpression{BinaryExpression, operator, left, right}
 }
 
-type additiveExpression struct {
+type binaryExpression struct {
 	Type
 	Operator string
 	Left     interface{}

@@ -77,3 +77,8 @@ func TestRecognizesAdditiveOperators(t *testing.T) {
 	tokenizerTest(t, `+`, []Token{{AdditiveOperator, `+`}})
 	tokenizerTest(t, `-`, []Token{{AdditiveOperator, `-`}})
 }
+
+func TestRecognizesMultiplicativeOperators(t *testing.T) {
+	tokenizerTest(t, `*`, []Token{{MultiplicativeOperator, `*`}})
+	tokenizerTest(t, `/`, []Token{{MultiplicativeOperator, `/`}})
+}

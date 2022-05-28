@@ -100,7 +100,7 @@ func TestAdditiveExpression(t *testing.T) {
 		t,
 		`1+1;`,
 		factory.Program(
-			factory.ExpressionStatement(factory.AdditiveExpression(
+			factory.ExpressionStatement(factory.BinaryExpression(
 				"+",
 				factory.NumericLiteral(1),
 				factory.NumericLiteral(1),
@@ -111,7 +111,7 @@ func TestAdditiveExpression(t *testing.T) {
 		t,
 		`1-1;`,
 		factory.Program(
-			factory.ExpressionStatement(factory.AdditiveExpression(
+			factory.ExpressionStatement(factory.BinaryExpression(
 				"-",
 				factory.NumericLiteral(1),
 				factory.NumericLiteral(1),
@@ -122,12 +122,66 @@ func TestAdditiveExpression(t *testing.T) {
 		t,
 		`1+1-2;`,
 		factory.Program(
-			factory.ExpressionStatement(factory.AdditiveExpression(
+			factory.ExpressionStatement(factory.BinaryExpression(
 				"-",
-				factory.AdditiveExpression(
+				factory.BinaryExpression(
 					"+",
 					factory.NumericLiteral(1),
 					factory.NumericLiteral(1),
+				),
+				factory.NumericLiteral(2),
+			)),
+		))
+}
+
+func TestMultiplicativeExpression(t *testing.T) {
+	parserTest(
+		t,
+		`1*1;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.BinaryExpression(
+				"*",
+				factory.NumericLiteral(1),
+				factory.NumericLiteral(1),
+			)),
+		))
+
+	parserTest(
+		t,
+		`1/1;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.BinaryExpression(
+				"/",
+				factory.NumericLiteral(1),
+				factory.NumericLiteral(1),
+			)),
+		))
+
+	parserTest(
+		t,
+		`2+2*2;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.BinaryExpression(
+				"+",
+				factory.NumericLiteral(2),
+				factory.BinaryExpression(
+					"*",
+					factory.NumericLiteral(2),
+					factory.NumericLiteral(2),
+				),
+			)),
+		))
+
+	parserTest(
+		t,
+		`2*2*2;`,
+		factory.Program(
+			factory.ExpressionStatement(factory.BinaryExpression(
+				"*",
+				factory.BinaryExpression(
+					"*",
+					factory.NumericLiteral(2),
+					factory.NumericLiteral(2),
 				),
 				factory.NumericLiteral(2),
 			)),

@@ -86,20 +86,44 @@ func (p *parser) expression() interface{} {
 }
 
 // AdditiveExpression
-// 	: Literal
+// 	: MultiplicativeExpression
 // 	| AdditiveExpression AdditiveOperator Literal
 // 	;
 func (p *parser) additiveExpression() interface{} {
-	left := p.literal()
+	left := p.multiplicativeExpression()
 
 	for p.lookAhead.Type == tokenizer.AdditiveOperator {
 		operator := p.consume(tokenizer.AdditiveOperator)
-		right := p.literal()
+		right := p.multiplicativeExpression()
 
-		left = p.factory.AdditiveExpression(operator.Value, left, right)
+		left = p.factory.BinaryExpression(operator.Value, left, right)
 	}
 
 	return left
+}
+
+// MultiplicativeExpression
+// 	: PrimaryExpression
+// 	| MultiplicativeExpression MultiplicativeOperator PrimaryExpression
+// 	;
+func (p *parser) multiplicativeExpression() interface{} {
+	left := p.primaryExpression()
+
+	for p.lookAhead.Type == tokenizer.MultiplicativeOperator {
+		operator := p.consume(tokenizer.MultiplicativeOperator)
+		right := p.primaryExpression()
+
+		left = p.factory.BinaryExpression(operator.Value, left, right)
+	}
+
+	return left
+}
+
+// PrimaryExpression
+// 	: Literal
+// 	;
+func (p *parser) primaryExpression() interface{} {
+	return p.literal()
 }
 
 // Literal

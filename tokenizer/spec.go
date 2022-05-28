@@ -3,13 +3,14 @@ package tokenizer
 type Type string
 
 const (
-	None              Type = ""
-	Number                 = "Number"
-	String                 = "String"
-	Semicolon              = "Semicolon"
-	OpeningCurlyBrace      = "OpeningCurlyBrace"
-	ClosingCurlyBrace      = "ClosingCurlyBrace"
-	AdditiveOperator       = "AdditiveOperator"
+	None                   Type = ""
+	Number                      = "Number"
+	String                      = "String"
+	Semicolon                   = "Semicolon"
+	OpeningCurlyBrace           = "OpeningCurlyBrace"
+	ClosingCurlyBrace           = "ClosingCurlyBrace"
+	AdditiveOperator            = "AdditiveOperator"
+	MultiplicativeOperator      = "MultiplicativeOperator"
 )
 
 type specEntry struct {
@@ -25,4 +26,5 @@ var spec = []specEntry{
 	{OpeningCurlyBrace, []string{`{`}},
 	{ClosingCurlyBrace, []string{`}`}},
 	{AdditiveOperator, []string{`[\+-]`}},
+	{MultiplicativeOperator, []string{`[\/*]`}},
 }
