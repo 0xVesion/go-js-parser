@@ -121,9 +121,28 @@ func (p *parser) multiplicativeExpression() interface{} {
 
 // PrimaryExpression
 // 	: Literal
+//  | ParenthesizedExpression
 // 	;
 func (p *parser) primaryExpression() interface{} {
-	return p.literal()
+	switch p.lookAhead.Type {
+	case tokenizer.OpeningParenthesis:
+		return p.parenthesizedExpression()
+	default:
+		return p.literal()
+	}
+}
+
+// ParenthesizedExpression
+// 	: '(' Expression ')'
+// 	;
+func (p *parser) parenthesizedExpression() interface{} {
+	p.consume(tokenizer.OpeningParenthesis)
+
+	ex := p.expression()
+
+	p.consume(tokenizer.ClosingParenthesis)
+
+	return ex
 }
 
 // Literal
@@ -152,7 +171,7 @@ func (p *parser) numericLiteral() interface{} {
 		panic(err)
 	}
 
-	return p.factory.NumericLiteral(value)
+	return p.factory.Literal(value)
 }
 
 // StringLiteral
@@ -161,5 +180,5 @@ func (p *parser) numericLiteral() interface{} {
 func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)
 
-	return p.factory.StringLiteral(token.Value[1 : len(token.Value)-1])
+	return p.factory.Literal(token.Value[1 : len(token.Value)-1])
 }

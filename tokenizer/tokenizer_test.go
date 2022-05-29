@@ -82,3 +82,8 @@ func TestRecognizesMultiplicativeOperators(t *testing.T) {
 	tokenizerTest(t, `*`, []Token{{MultiplicativeOperator, `*`}})
 	tokenizerTest(t, `/`, []Token{{MultiplicativeOperator, `/`}})
 }
+
+func TestRecognizesBraces(t *testing.T) {
+	tokenizerTest(t, `(`, []Token{{OpeningParenthesis, `(`}})
+	tokenizerTest(t, `)`, []Token{{ClosingParenthesis, `)`}})
+}

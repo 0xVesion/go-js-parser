@@ -6,8 +6,7 @@ type Type string
 
 const (
 	Program             Type = "Program"
-	NumericLiteral           = "NumericLiteral"
-	StringLiteral            = "StringLiteral"
+	Literal                  = "Literal"
 	ExpressionStatement      = "ExpressionStatement"
 	BlockStatement           = "BlockStatement"
 	EmptyStatement           = "EmptyStatement"
@@ -20,22 +19,18 @@ func New() parser.AstFactory {
 	return factory{}
 }
 
-type literal[T any] struct {
-	Type
-	Value T
+type literal struct {
+	Type  `json:"type"`
+	Value interface{} `json:"value"`
 }
 
-func (factory) NumericLiteral(val int) interface{} {
-	return literal[int]{NumericLiteral, val}
-}
-
-func (factory) StringLiteral(val string) interface{} {
-	return literal[string]{StringLiteral, val}
+func (factory) Literal(val interface{}) interface{} {
+	return literal{Literal, val}
 }
 
 type blockStatement struct {
-	Type
-	Body []interface{}
+	Type `json:"type"`
+	Body []interface{} `json:"body"`
 }
 
 func (factory) BlockStatement(sl ...interface{}) interface{} {
@@ -43,8 +38,8 @@ func (factory) BlockStatement(sl ...interface{}) interface{} {
 }
 
 type program struct {
-	Type
-	Body []interface{}
+	Type `json:"type"`
+	Body []interface{} `json:"body"`
 }
 
 func (factory) Program(sl ...interface{}) interface{} {
@@ -52,7 +47,7 @@ func (factory) Program(sl ...interface{}) interface{} {
 }
 
 type emptyStatement struct {
-	Type
+	Type `json:"type"`
 }
 
 func (factory) EmptyStatement() interface{} {
@@ -60,8 +55,8 @@ func (factory) EmptyStatement() interface{} {
 }
 
 type expressionStatement struct {
-	Type
-	Expression interface{}
+	Type       `json:"type"`
+	Expression interface{} `json:"expression"`
 }
 
 func (factory) ExpressionStatement(exp interface{}) interface{} {
@@ -73,8 +68,8 @@ func (factory) BinaryExpression(operator string, left interface{}, right interfa
 }
 
 type binaryExpression struct {
-	Type
-	Operator string
-	Left     interface{}
-	Right    interface{}
+	Type     `json:"type"`
+	Operator string      `json:"operator"`
+	Left     interface{} `json:"left"`
+	Right    interface{} `json:"right"`
 }

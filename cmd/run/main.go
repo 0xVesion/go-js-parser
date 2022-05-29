@@ -10,14 +10,11 @@ import (
 )
 
 func main() {
-	ast, err := parser.New(tokenizer.New(`{
-		"Hello World!";
-		{
-			123;
-			123;
-			123;
-		}
-	}`), jsonastfactory.New()).Parse()
+	ast, err := parser.New(tokenizer.New(`
+	1+1;
+	2+2*2;
+	"Hello World!";
+	`), jsonastfactory.New()).Parse()
 	if err != nil {
 		panic(err)
 	}

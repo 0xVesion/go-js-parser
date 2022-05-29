@@ -11,6 +11,8 @@ const (
 	ClosingCurlyBrace           = "ClosingCurlyBrace"
 	AdditiveOperator            = "AdditiveOperator"
 	MultiplicativeOperator      = "MultiplicativeOperator"
+	OpeningParenthesis          = "OpeningParenthesis"
+	ClosingParenthesis          = "ClosingParenthesis"
 )
 
 type specEntry struct {
@@ -27,4 +29,6 @@ var spec = []specEntry{
 	{ClosingCurlyBrace, []string{`}`}},
 	{AdditiveOperator, []string{`[\+-]`}},
 	{MultiplicativeOperator, []string{`[\/*]`}},
+	{OpeningParenthesis, []string{`\(`}},
+	{ClosingParenthesis, []string{`\)`}},
 }
