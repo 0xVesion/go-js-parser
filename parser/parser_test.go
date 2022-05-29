@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/0xvesion/go-parser/parser"
-	jsonastfactory "github.com/0xvesion/go-parser/parser/json_ast_factory"
-	"github.com/0xvesion/go-parser/tokenizer"
+	"github.com/0xvesion/go-js-parser/parser"
+	jsonastfactory "github.com/0xvesion/go-js-parser/parser/json_ast_factory"
+	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
 var factory = jsonastfactory.New()

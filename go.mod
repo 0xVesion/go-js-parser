@@ -1,3 +1,3 @@
-module github.com/0xvesion/go-parser
+module github.com/0xvesion/go-js-parser
 
 go 1.18

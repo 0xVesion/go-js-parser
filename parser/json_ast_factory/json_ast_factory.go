@@ -1,6 +1,6 @@
 package jsonastfactory
 
-import "github.com/0xvesion/go-parser/parser"
+import "github.com/0xvesion/go-js-parser/parser"
 
 type Type string
 

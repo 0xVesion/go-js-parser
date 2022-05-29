@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"github.com/0xvesion/go-parser/tokenizer"
+	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
 type Parser interface {

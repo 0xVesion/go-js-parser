@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/0xvesion/go-parser/tokenizer"
+	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
 // Entry point of the program.

@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/0xvesion/go-parser/parser"
-	jsonastfactory "github.com/0xvesion/go-parser/parser/json_ast_factory"
-	"github.com/0xvesion/go-parser/tokenizer"
+	"github.com/0xvesion/go-js-parser/parser"
+	jsonastfactory "github.com/0xvesion/go-js-parser/parser/json_ast_factory"
+	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
 func sanatize(node map[string]interface{}, keys []string) interface{} {
