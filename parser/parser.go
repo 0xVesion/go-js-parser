@@ -56,3 +56,16 @@ func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 
 	return token
 }
+
+func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer.Type) interface{} {
+	left := builder()
+
+	for p.lookAhead.Type == operator {
+		operator := p.consume(operator)
+		right := builder()
+
+		left = p.factory.BinaryExpression(operator.Value, left, right)
+	}
+
+	return left
+}
