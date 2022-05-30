@@ -71,9 +71,13 @@ func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer
 }
 
 func (p *parser) isLookaheadLiteral() bool {
-	return p.lookAhead.Type == tokenizer.Number || p.lookAhead.Type == tokenizer.String
+	return p.lookAhead.Type == tokenizer.Number ||
+		p.lookAhead.Type == tokenizer.String ||
+		p.lookAhead.Type == tokenizer.NullLiteral ||
+		p.lookAhead.Type == tokenizer.BooleanLiteral
 }
 
 func (p *parser) isLookaheadAssignmentOperator() bool {
-	return p.lookAhead.Type == tokenizer.SimpleAssignmentOperator || p.lookAhead.Type == tokenizer.ComplexAssignmentOperator
+	return p.lookAhead.Type == tokenizer.SimpleAssignmentOperator ||
+		p.lookAhead.Type == tokenizer.ComplexAssignmentOperator
 }

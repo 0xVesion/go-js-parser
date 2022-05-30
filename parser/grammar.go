@@ -257,6 +257,8 @@ func (p *parser) parenthesizedExpression() interface{} {
 // Literal
 // 	: NumericLiteral
 // 	| StringLiteral
+//	| BooleanLiteral
+//  | NullLiteral
 // 	;
 func (p *parser) literal() interface{} {
 	switch p.lookAhead.Type {
@@ -264,9 +266,32 @@ func (p *parser) literal() interface{} {
 		return p.numericLiteral()
 	case tokenizer.String:
 		return p.stringLiteral()
+	case tokenizer.BooleanLiteral:
+		return p.booleanLiteral()
+	case tokenizer.NullLiteral:
+		return p.nullLiteral()
 	}
 
 	panic(fmt.Errorf("invalid literal type %v", p.lookAhead.Type))
+}
+
+// BooleanLiteral
+// 	: 'true'
+// 	| 'false'
+// 	;
+func (p *parser) booleanLiteral() interface{} {
+	token := p.consume(tokenizer.BooleanLiteral)
+
+	return p.factory.Literal(token.Value == "true")
+}
+
+// NullLiteral
+// 	: 'null'
+// 	;
+func (p *parser) nullLiteral() interface{} {
+	p.consume(tokenizer.NullLiteral)
+
+	return p.factory.Literal(nil)
 }
 
 // NumericLiteral

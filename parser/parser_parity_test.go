@@ -163,5 +163,14 @@ func TestIfStatement(t *testing.T) {
 func TestRelationalExpression(t *testing.T) {
 	test(t, `1>2;`)
 	test(t, `1+1<=2;`)
-	test(t, `a>a>a`)
+	test(t, `a>a>a;`)
+}
+
+func TestBooleanParity(t *testing.T) {
+	test(t, `true;`)
+	test(t, `false;`)
+}
+
+func TestNullParity(t *testing.T) {
+	test(t, `null;`)
 }

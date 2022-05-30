@@ -110,6 +110,9 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
 	tokenizerTest(t, `if`, []Token{{IfKeyword, `if`}})
 	tokenizerTest(t, `else`, []Token{{ElseKeyword, `else`}})
+	tokenizerTest(t, `true`, []Token{{BooleanLiteral, `true`}})
+	tokenizerTest(t, `false`, []Token{{BooleanLiteral, `false`}})
+	tokenizerTest(t, `null`, []Token{{NullLiteral, `null`}})
 }
 
 func TestRelationalOperator(t *testing.T) {
