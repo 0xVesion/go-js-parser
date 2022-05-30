@@ -130,11 +130,11 @@ func (p *parser) expression() interface{} {
 }
 
 // AssignmentExpression
-// 	: AdditiveExpression
+// 	: RelationalExpression
 // 	| LeftHandSideExpression ASSIGNMENT_OPERATOR AssignmentExpression
 // 	;
 func (p *parser) assignmentExpression() interface{} {
-	left := p.additiveExpression()
+	left := p.relationalExpression()
 
 	if !p.isLookaheadAssignmentOperator() {
 		return left
@@ -150,9 +150,20 @@ func (p *parser) assignmentExpression() interface{} {
 	return p.factory.AssignmentExpression(op, left, right)
 }
 
+// RelationalExpression
+// 	: AdditiveExpression
+// 	| RelationalExpression RELATIONAL_OPERATOR AdditiveExpression
+// 	;
+func (p *parser) relationalExpression() interface{} {
+	return p.binaryExpression(
+		p.additiveExpression,
+		tokenizer.RelationalOperator,
+	)
+}
+
 // AdditiveExpression
 // 	: MultiplicativeExpression
-// 	| AdditiveExpression ADDITIVE_OPERATOR Literal
+// 	| AdditiveExpression ADDITIVE_OPERATOR MultiplicativeExpression
 // 	;
 func (p *parser) additiveExpression() interface{} {
 	return p.binaryExpression(

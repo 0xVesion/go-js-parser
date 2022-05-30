@@ -109,3 +109,10 @@ func TestRecognizesVariableDeclarationKeyword(t *testing.T) {
 	tokenizerTest(t, `const`, []Token{{VariableDeclarationKeyword, `const`}})
 	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
 }
+
+func TestRelationalOperator(t *testing.T) {
+	tokenizerTest(t, `<`, []Token{{RelationalOperator, `<`}})
+	tokenizerTest(t, `<=`, []Token{{RelationalOperator, `<=`}})
+	tokenizerTest(t, `>`, []Token{{RelationalOperator, `>`}})
+	tokenizerTest(t, `>=`, []Token{{RelationalOperator, `>=`}})
+}

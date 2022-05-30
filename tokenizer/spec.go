@@ -18,6 +18,7 @@ const (
 	ComplexAssignmentOperator       = "ComplexAssignmentOperator"
 	VariableDeclarationKeyword      = "VariableDeclarationKeyword"
 	Comma                           = "Comma"
+	RelationalOperator              = "RelationalOperator"
 )
 
 type specEntry struct {
@@ -33,6 +34,7 @@ var spec = []specEntry{
 	{Comma, []string{`,`}},
 	{OpeningCurlyBrace, []string{`{`}},
 	{ClosingCurlyBrace, []string{`}`}},
+	{RelationalOperator, []string{`[><]=?`}},
 	{SimpleAssignmentOperator, []string{`=`}},
 	{ComplexAssignmentOperator, []string{`[-+*/]=`}},
 	{AdditiveOperator, []string{`[\+-]`}},

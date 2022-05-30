@@ -154,3 +154,10 @@ func TestVariableDeclaration(t *testing.T) {
 	test(t, `let a, b;`)
 	test(t, `let a, b = 1;`)
 }
+
+
+func TestRelationalExpression(t *testing.T) {
+	test(t, `1>2;`)
+	test(t, `1+1<=2;`)
+	test(t, `a>a>a`)
+}
