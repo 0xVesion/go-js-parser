@@ -69,3 +69,7 @@ func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer
 
 	return left
 }
+
+func (p *parser) isLookaheadLiteral() bool {
+	return p.lookAhead.Type == tokenizer.Number || p.lookAhead.Type == tokenizer.String
+}

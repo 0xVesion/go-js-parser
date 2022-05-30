@@ -79,15 +79,36 @@ func (p *parser) expressionStatment() interface{} {
 }
 
 // Expression
-// 	: AdditiveExpression
+// 	: AssignmentExpression
 // 	;
 func (p *parser) expression() interface{} {
-	return p.additiveExpression()
+	return p.assignmentExpression()
+}
+
+// AssignmentExpression
+// 	: AdditiveExpression
+// 	| LeftHandSideExpression ASSIGNMENT_OPERATOR AssignmentExpression
+// 	;
+func (p *parser) assignmentExpression() interface{} {
+	left := p.additiveExpression()
+
+	if p.lookAhead.Type != tokenizer.AssignmentOperator {
+		return left
+	}
+
+	if !p.factory.IsIdentifier(left) {
+		panic(fmt.Errorf("Invalid left-hand side expression: %v", left))
+	}
+
+	op := p.consume(tokenizer.AssignmentOperator)
+	right := p.assignmentExpression()
+
+	return p.factory.AssignmentExpression(op.Value, left, right)
 }
 
 // AdditiveExpression
 // 	: MultiplicativeExpression
-// 	| AdditiveExpression AdditiveOperator Literal
+// 	| AdditiveExpression ADDITIVE_OPERATOR Literal
 // 	;
 func (p *parser) additiveExpression() interface{} {
 	return p.binaryExpression(
@@ -98,7 +119,7 @@ func (p *parser) additiveExpression() interface{} {
 
 // MultiplicativeExpression
 // 	: PrimaryExpression
-// 	| MultiplicativeExpression MultiplicativeOperator PrimaryExpression
+// 	| MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
 // 	;
 func (p *parser) multiplicativeExpression() interface{} {
 	return p.binaryExpression(
@@ -110,14 +131,33 @@ func (p *parser) multiplicativeExpression() interface{} {
 // PrimaryExpression
 // 	: Literal
 //  | ParenthesizedExpression
+//  | LeftHandSideExpression
 // 	;
 func (p *parser) primaryExpression() interface{} {
+	if p.isLookaheadLiteral() {
+		return p.literal()
+	}
+
 	switch p.lookAhead.Type {
 	case tokenizer.OpeningParenthesis:
 		return p.parenthesizedExpression()
 	default:
-		return p.literal()
+		return p.leftHandSideExpression()
 	}
+}
+
+// LeftHandSideExpression
+// 	: Identifier
+// 	;
+func (p *parser) leftHandSideExpression() interface{} {
+	return p.identifier()
+}
+
+// Identifier
+// 	: IDENTIFIER
+// 	;
+func (p *parser) identifier() interface{} {
+	return p.factory.Identifier(p.consume(tokenizer.Identifier).Value)
 }
 
 // ParenthesizedExpression
@@ -149,7 +189,7 @@ func (p *parser) literal() interface{} {
 }
 
 // NumericLiteral
-// 	: Number
+// 	: NUMBER
 // 	;
 func (p *parser) numericLiteral() interface{} {
 	token := p.consume(tokenizer.Number)
@@ -163,7 +203,7 @@ func (p *parser) numericLiteral() interface{} {
 }
 
 // StringLiteral
-// 	: String
+// 	: STRING
 // 	;
 func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)

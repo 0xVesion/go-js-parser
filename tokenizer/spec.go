@@ -13,6 +13,8 @@ const (
 	MultiplicativeOperator      = "MultiplicativeOperator"
 	OpeningParenthesis          = "OpeningParenthesis"
 	ClosingParenthesis          = "ClosingParenthesis"
+	Identifier                  = "Identifier"
+	AssignmentOperator          = "AssignmentOperator"
 )
 
 type specEntry struct {
@@ -31,4 +33,6 @@ var spec = []specEntry{
 	{MultiplicativeOperator, []string{`[\/*]`}},
 	{OpeningParenthesis, []string{`\(`}},
 	{ClosingParenthesis, []string{`\)`}},
+	{Identifier, []string{`[a-zA-Z_$]\w*`}},
+	{AssignmentOperator, []string{`[-+*/]?=`}},
 }

@@ -5,12 +5,14 @@ import "github.com/0xvesion/go-js-parser/parser"
 type Type string
 
 const (
-	Program             Type = "Program"
-	Literal                  = "Literal"
-	ExpressionStatement      = "ExpressionStatement"
-	BlockStatement           = "BlockStatement"
-	EmptyStatement           = "EmptyStatement"
-	BinaryExpression         = "BinaryExpression"
+	Program              Type = "Program"
+	Literal                   = "Literal"
+	ExpressionStatement       = "ExpressionStatement"
+	BlockStatement            = "BlockStatement"
+	EmptyStatement            = "EmptyStatement"
+	BinaryExpression          = "BinaryExpression"
+	AssignmentExpression      = "AssignmentExpression"
+	Identifier                = "Identifier"
 )
 
 type factory struct{}
@@ -72,4 +74,30 @@ type binaryExpression struct {
 	Operator string      `json:"operator"`
 	Left     interface{} `json:"left"`
 	Right    interface{} `json:"right"`
+}
+
+func (factory) AssignmentExpression(operator string, left interface{}, right interface{}) interface{} {
+	return assignmentExpression{AssignmentExpression, operator, left, right}
+}
+
+type assignmentExpression struct {
+	Type     `json:"type"`
+	Operator string      `json:"operator"`
+	Left     interface{} `json:"left"`
+	Right    interface{} `json:"right"`
+}
+
+func (factory) Identifier(name string) interface{} {
+	return identifier{Identifier, name}
+}
+
+type identifier struct {
+	Type `json:"type"`
+	Name string `json:"name"`
+}
+
+func (factory) IsIdentifier(val interface{}) bool {
+	_, ok := val.(identifier)
+
+	return ok
 }

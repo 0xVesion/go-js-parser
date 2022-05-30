@@ -87,3 +87,20 @@ func TestRecognizesBraces(t *testing.T) {
 	tokenizerTest(t, `(`, []Token{{OpeningParenthesis, `(`}})
 	tokenizerTest(t, `)`, []Token{{ClosingParenthesis, `)`}})
 }
+
+func TestRecognizesIdentifiers(t *testing.T) {
+	tokenizerTest(t, `test`, []Token{{Identifier, `test`}})
+	tokenizerTest(t, `_`, []Token{{Identifier, `_`}})
+	tokenizerTest(t, `$`, []Token{{Identifier, `$`}})
+	tokenizerTest(t, `TEST`, []Token{{Identifier, `TEST`}})
+	tokenizerTest(t, `$test123`, []Token{{Identifier, `$test123`}})
+	tokenizerTest(t, `_test123`, []Token{{Identifier, `_test123`}})
+}
+
+func TestRecognizesAssignmentOperator(t *testing.T) {
+	tokenizerTest(t, `=`, []Token{{AssignmentOperator, `=`}})
+	tokenizerTest(t, `+=`, []Token{{AssignmentOperator, `+=`}})
+	tokenizerTest(t, `*=`, []Token{{AssignmentOperator, `*=`}})
+	tokenizerTest(t, `-=`, []Token{{AssignmentOperator, `-=`}})
+	tokenizerTest(t, `/=`, []Token{{AssignmentOperator, `/=`}})
+}

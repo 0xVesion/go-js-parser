@@ -140,3 +140,9 @@ func TestMultiplicativeExpressionParity(t *testing.T) {
 func TestMultiplicativeExpressionPrecedenceParity(t *testing.T) {
 	test(t, `(2+2)*2;`)
 }
+
+func TestAssignments(t *testing.T) {
+	test(t, `a = 1;`)
+	test(t, `a = y = 1;`)
+	test(t, `a = 1 + 2;`)
+}
