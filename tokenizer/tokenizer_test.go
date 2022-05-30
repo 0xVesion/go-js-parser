@@ -98,9 +98,14 @@ func TestRecognizesIdentifiers(t *testing.T) {
 }
 
 func TestRecognizesAssignmentOperator(t *testing.T) {
-	tokenizerTest(t, `=`, []Token{{AssignmentOperator, `=`}})
-	tokenizerTest(t, `+=`, []Token{{AssignmentOperator, `+=`}})
-	tokenizerTest(t, `*=`, []Token{{AssignmentOperator, `*=`}})
-	tokenizerTest(t, `-=`, []Token{{AssignmentOperator, `-=`}})
-	tokenizerTest(t, `/=`, []Token{{AssignmentOperator, `/=`}})
+	tokenizerTest(t, `=`, []Token{{SimpleAssignmentOperator, `=`}})
+	tokenizerTest(t, `+=`, []Token{{ComplexAssignmentOperator, `+=`}})
+	tokenizerTest(t, `*=`, []Token{{ComplexAssignmentOperator, `*=`}})
+	tokenizerTest(t, `-=`, []Token{{ComplexAssignmentOperator, `-=`}})
+	tokenizerTest(t, `/=`, []Token{{ComplexAssignmentOperator, `/=`}})
+}
+
+func TestRecognizesVariableDeclarationKeyword(t *testing.T) {
+	tokenizerTest(t, `const`, []Token{{VariableDeclarationKeyword, `const`}})
+	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
 }

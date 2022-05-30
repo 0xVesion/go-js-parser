@@ -10,4 +10,6 @@ type AstFactory interface {
 	Identifier(name string) interface{}
 	AssignmentExpression(operator string, left interface{}, right interface{}) interface{}
 	IsIdentifier(val interface{}) bool
+	VariableDeclaration(kind string, declarations []interface{}) interface{}
+	VariableDeclarator(id interface{}, init interface{}) interface{}
 }

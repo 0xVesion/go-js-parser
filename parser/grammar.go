@@ -40,9 +40,53 @@ func (p *parser) statement() interface{} {
 		return p.blockStatement()
 	case tokenizer.Semicolon:
 		return p.emptyStatement()
+	case tokenizer.VariableDeclarationKeyword:
+		return p.variableDeclaration()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// VariableDeclaration
+// 	: VARIABLE_DECLARATION_KEYWORD VariableDeclaratorList ';'
+// 	;
+func (p *parser) variableDeclaration() interface{} {
+	kind := p.consume(tokenizer.VariableDeclarationKeyword)
+	declarations := p.variableDeclaratorList()
+	p.consume(tokenizer.Semicolon)
+
+	return p.factory.VariableDeclaration(kind.Value, declarations)
+}
+
+// VariableDeclaratorList
+// 	: VariableDeclarator
+//	| VariableDeclaratorList ',' VariableDeclarator
+// 	;
+func (p *parser) variableDeclaratorList() []interface{} {
+	declarations := []interface{}{p.variableDeclarator()}
+
+	for p.lookAhead.Type == tokenizer.Comma {
+		p.consume(tokenizer.Comma)
+		declarations = append(declarations, p.variableDeclarator())
+	}
+
+	return declarations
+}
+
+// VariableDeclarator
+// 	: Identifier OptVariableInitializer
+// 	;
+func (p *parser) variableDeclarator() interface{} {
+	id := p.identifier()
+
+	var init interface{}
+	if p.lookAhead.Type != tokenizer.Semicolon && p.lookAhead.Type != tokenizer.Comma {
+
+		p.consume(tokenizer.SimpleAssignmentOperator)
+		init = p.assignmentExpression()
+	}
+
+	return p.factory.VariableDeclarator(id, init)
 }
 
 // EmptyStatement
@@ -92,7 +136,7 @@ func (p *parser) expression() interface{} {
 func (p *parser) assignmentExpression() interface{} {
 	left := p.additiveExpression()
 
-	if p.lookAhead.Type != tokenizer.AssignmentOperator {
+	if !p.isLookaheadAssignmentOperator() {
 		return left
 	}
 
@@ -100,10 +144,10 @@ func (p *parser) assignmentExpression() interface{} {
 		panic(fmt.Errorf("Invalid left-hand side expression: %v", left))
 	}
 
-	op := p.consume(tokenizer.AssignmentOperator)
+	op := p.consume(p.lookAhead.Type).Value
 	right := p.assignmentExpression()
 
-	return p.factory.AssignmentExpression(op.Value, left, right)
+	return p.factory.AssignmentExpression(op, left, right)
 }
 
 // AdditiveExpression

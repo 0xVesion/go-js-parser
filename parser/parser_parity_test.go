@@ -146,3 +146,11 @@ func TestAssignments(t *testing.T) {
 	test(t, `a = y = 1;`)
 	test(t, `a = 1 + 2;`)
 }
+
+
+func TestVariableDeclaration(t *testing.T) {
+	test(t, `let a;`)
+	test(t, `let a = 1;`)
+	test(t, `let a, b;`)
+	test(t, `let a, b = 1;`)
+}

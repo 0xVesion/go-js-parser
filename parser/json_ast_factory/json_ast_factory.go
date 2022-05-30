@@ -13,6 +13,8 @@ const (
 	BinaryExpression          = "BinaryExpression"
 	AssignmentExpression      = "AssignmentExpression"
 	Identifier                = "Identifier"
+	VariableDeclaration       = "VariableDeclaration"
+	VariableDeclarator        = "VariableDeclarator"
 )
 
 type factory struct{}
@@ -100,4 +102,24 @@ func (factory) IsIdentifier(val interface{}) bool {
 	_, ok := val.(identifier)
 
 	return ok
+}
+
+func (factory) VariableDeclaration(kind string, declarations []interface{}) interface{} {
+	return variableDeclaration{VariableDeclaration, kind, declarations}
+}
+
+type variableDeclaration struct {
+	Type         `json:"type"`
+	Kind         string        `json:"kind"`
+	Declarations []interface{} `json:"declarations"`
+}
+
+func (factory) VariableDeclarator(id interface{}, init interface{}) interface{} {
+	return variableDeclarator{VariableDeclarator, id, init}
+}
+
+type variableDeclarator struct {
+	Type `json:"type"`
+	Id   interface{} `json:"id"`
+	Init interface{} `json:"init"`
 }
