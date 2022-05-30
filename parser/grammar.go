@@ -33,6 +33,8 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
 // 	: ExpressionStatment
 // 	| BlockStatement
 // 	| EmptyStatement
+// 	| VariableDeclaration
+// 	| IfStatement
 // 	;
 func (p *parser) statement() interface{} {
 	switch p.lookAhead.Type {
@@ -42,9 +44,33 @@ func (p *parser) statement() interface{} {
 		return p.emptyStatement()
 	case tokenizer.VariableDeclarationKeyword:
 		return p.variableDeclaration()
+	case tokenizer.IfKeyword:
+		return p.ifStatement()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// IfStatement
+// 	: 'if' ParenthesizedExpression Statement
+// 	| 'if' ParenthesizedExpression Statement 'else' Statement
+// 	;
+func (p *parser) ifStatement() interface{} {
+	p.consume(tokenizer.IfKeyword)
+
+	test := p.parenthesizedExpression()
+
+	consequent := p.statement()
+
+	if p.lookAhead.Type != tokenizer.ElseKeyword {
+		return p.factory.IfStatement(test, consequent, nil)
+	}
+
+	p.consume(tokenizer.ElseKeyword)
+
+	alternate := p.statement()
+
+	return p.factory.IfStatement(test, consequent, alternate)
 }
 
 // VariableDeclaration

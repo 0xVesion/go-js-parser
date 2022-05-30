@@ -15,6 +15,7 @@ const (
 	Identifier                = "Identifier"
 	VariableDeclaration       = "VariableDeclaration"
 	VariableDeclarator        = "VariableDeclarator"
+	IfStatement               = "IfStatement"
 )
 
 type factory struct{}
@@ -122,4 +123,15 @@ type variableDeclarator struct {
 	Type `json:"type"`
 	Id   interface{} `json:"id"`
 	Init interface{} `json:"init"`
+}
+
+func (factory) IfStatement(test interface{}, consequent interface{}, alternate interface{}) interface{} {
+	return ifStatement{IfStatement, test, consequent, alternate}
+}
+
+type ifStatement struct {
+	Type       `json:"type"`
+	Test       interface{} `json:"test"`
+	Consequent interface{} `json:"consequent"`
+	Alternate  interface{} `json:"alternate"`
 }

@@ -12,4 +12,5 @@ type AstFactory interface {
 	IsIdentifier(val interface{}) bool
 	VariableDeclaration(kind string, declarations []interface{}) interface{}
 	VariableDeclarator(id interface{}, init interface{}) interface{}
+	IfStatement(test interface{}, consequent interface{}, alternate interface{}) interface{}
 }

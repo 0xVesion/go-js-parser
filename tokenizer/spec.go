@@ -18,6 +18,8 @@ const (
 	ComplexAssignmentOperator       = "ComplexAssignmentOperator"
 	VariableDeclarationKeyword      = "VariableDeclarationKeyword"
 	Comma                           = "Comma"
+	IfKeyword                       = "IfKeyword"
+	ElseKeyword                     = "ElseKeyword"
 	RelationalOperator              = "RelationalOperator"
 )
 
@@ -42,5 +44,7 @@ var spec = []specEntry{
 	{OpeningParenthesis, []string{`\(`}},
 	{ClosingParenthesis, []string{`\)`}},
 	{VariableDeclarationKeyword, []string{`\b(let)|(const)\b`}},
+	{IfKeyword, []string{`\bif\b`}},
+	{ElseKeyword, []string{`\belse\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},
 }

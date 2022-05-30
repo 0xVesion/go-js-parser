@@ -105,9 +105,11 @@ func TestRecognizesAssignmentOperator(t *testing.T) {
 	tokenizerTest(t, `/=`, []Token{{ComplexAssignmentOperator, `/=`}})
 }
 
-func TestRecognizesVariableDeclarationKeyword(t *testing.T) {
+func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `const`, []Token{{VariableDeclarationKeyword, `const`}})
 	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
+	tokenizerTest(t, `if`, []Token{{IfKeyword, `if`}})
+	tokenizerTest(t, `else`, []Token{{ElseKeyword, `else`}})
 }
 
 func TestRelationalOperator(t *testing.T) {

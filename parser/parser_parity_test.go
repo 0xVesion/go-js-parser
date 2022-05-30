@@ -147,7 +147,6 @@ func TestAssignments(t *testing.T) {
 	test(t, `a = 1 + 2;`)
 }
 
-
 func TestVariableDeclaration(t *testing.T) {
 	test(t, `let a;`)
 	test(t, `let a = 1;`)
@@ -155,6 +154,11 @@ func TestVariableDeclaration(t *testing.T) {
 	test(t, `let a, b = 1;`)
 }
 
+func TestIfStatement(t *testing.T) {
+	test(t, `if (a > b) result = 100; else result = 200;`)
+	test(t, `if (a > b) result = 100;`)
+	test(t, `if (a > b) if (c > d) result = 123; else result = 321; else result = 111;`)
+}
 
 func TestRelationalExpression(t *testing.T) {
 	test(t, `1>2;`)
