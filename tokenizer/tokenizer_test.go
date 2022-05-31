@@ -115,9 +115,16 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `null`, []Token{{NullLiteral, `null`}})
 }
 
-func TestRelationalOperator(t *testing.T) {
+func TestRelationalOperators(t *testing.T) {
 	tokenizerTest(t, `<`, []Token{{RelationalOperator, `<`}})
 	tokenizerTest(t, `<=`, []Token{{RelationalOperator, `<=`}})
 	tokenizerTest(t, `>`, []Token{{RelationalOperator, `>`}})
 	tokenizerTest(t, `>=`, []Token{{RelationalOperator, `>=`}})
+}
+
+func TestEqualityOperators(t *testing.T) {
+	tokenizerTest(t, `==`, []Token{{EqualityOperator, `==`}})
+	tokenizerTest(t, `===`, []Token{{EqualityOperator, `===`}})
+	tokenizerTest(t, `!=`, []Token{{EqualityOperator, `!=`}})
+	tokenizerTest(t, `!==`, []Token{{EqualityOperator, `!==`}})
 }

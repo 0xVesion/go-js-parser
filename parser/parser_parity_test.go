@@ -174,3 +174,9 @@ func TestBooleanParity(t *testing.T) {
 func TestNullParity(t *testing.T) {
 	test(t, `null;`)
 }
+
+func TestEqualityParity(t *testing.T) {
+	test(t, `1==2;`)
+	test(t, `a+1!=2+2*3;`)
+	test(t, `if(1!=2) res = 200;`)
+}

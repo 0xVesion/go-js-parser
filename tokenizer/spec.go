@@ -23,6 +23,7 @@ const (
 	RelationalOperator              = "RelationalOperator"
 	BooleanLiteral                  = "BooleanLiteral"
 	NullLiteral                     = "NullLiteral"
+	EqualityOperator                = "EqualityOperator"
 )
 
 type specEntry struct {
@@ -38,6 +39,7 @@ var spec = []specEntry{
 	{Comma, []string{`,`}},
 	{OpeningCurlyBrace, []string{`{`}},
 	{ClosingCurlyBrace, []string{`}`}},
+	{EqualityOperator, []string{`[!=]==?`}},
 	{RelationalOperator, []string{`[><]=?`}},
 	{SimpleAssignmentOperator, []string{`=`}},
 	{ComplexAssignmentOperator, []string{`[-+*/]=`}},

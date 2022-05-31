@@ -156,24 +156,35 @@ func (p *parser) expression() interface{} {
 }
 
 // AssignmentExpression
-// 	: RelationalExpression
+// 	: EqualityExpression
 // 	| LeftHandSideExpression ASSIGNMENT_OPERATOR AssignmentExpression
 // 	;
 func (p *parser) assignmentExpression() interface{} {
-	left := p.relationalExpression()
+	left := p.equalityExpression()
 
 	if !p.isLookaheadAssignmentOperator() {
 		return left
 	}
 
 	if !p.factory.IsIdentifier(left) {
-		panic(fmt.Errorf("Invalid left-hand side expression: %v", left))
+		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
 	op := p.consume(p.lookAhead.Type).Value
 	right := p.assignmentExpression()
 
 	return p.factory.AssignmentExpression(op, left, right)
+}
+
+// EqualityExpression
+// 	: RelationalExpression
+// 	| EqualityExpression EQUALITY_OPERATOR RelationalExpression
+// 	;
+func (p *parser) equalityExpression() interface{} {
+	return p.binaryExpression(
+		p.relationalExpression,
+		tokenizer.EqualityOperator,
+	)
 }
 
 // RelationalExpression
