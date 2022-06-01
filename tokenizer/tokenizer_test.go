@@ -128,3 +128,8 @@ func TestEqualityOperators(t *testing.T) {
 	tokenizerTest(t, `!=`, []Token{{EqualityOperator, `!=`}})
 	tokenizerTest(t, `!==`, []Token{{EqualityOperator, `!==`}})
 }
+
+func TestLogicalOperators(t *testing.T) {
+	tokenizerTest(t, `||`, []Token{{LogicalOrOperator, `||`}})
+	tokenizerTest(t, `&&`, []Token{{LogicalAndOperator, `&&`}})
+}

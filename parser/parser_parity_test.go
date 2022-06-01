@@ -180,3 +180,9 @@ func TestEqualityParity(t *testing.T) {
 	test(t, `a+1!=2+2*3;`)
 	test(t, `if(1!=2) res = 200;`)
 }
+
+func TestLogicalExpressionParity(t *testing.T) {
+	test(t, `a = 1||2==2&&3;`)
+	test(t, `a||1!=2+2||3;`)
+	test(t, `a||1&&2+2||3;`)
+}

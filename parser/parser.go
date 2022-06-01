@@ -81,3 +81,16 @@ func (p *parser) isLookaheadAssignmentOperator() bool {
 	return p.lookAhead.Type == tokenizer.SimpleAssignmentOperator ||
 		p.lookAhead.Type == tokenizer.ComplexAssignmentOperator
 }
+
+func (p *parser) logicalExpression(builder func() interface{}, operator tokenizer.Type) interface{} {
+	left := builder()
+
+	for p.lookAhead.Type == operator {
+		operator := p.consume(operator)
+		right := builder()
+
+		left = p.factory.LogicalExpression(operator.Value, left, right)
+	}
+
+	return left
+}

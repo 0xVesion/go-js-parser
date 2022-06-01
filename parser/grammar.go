@@ -156,11 +156,11 @@ func (p *parser) expression() interface{} {
 }
 
 // AssignmentExpression
-// 	: EqualityExpression
+// 	: LogicalOrExpression
 // 	| LeftHandSideExpression ASSIGNMENT_OPERATOR AssignmentExpression
 // 	;
 func (p *parser) assignmentExpression() interface{} {
-	left := p.equalityExpression()
+	left := p.logicalOrExpression()
 
 	if !p.isLookaheadAssignmentOperator() {
 		return left
@@ -174,6 +174,28 @@ func (p *parser) assignmentExpression() interface{} {
 	right := p.assignmentExpression()
 
 	return p.factory.AssignmentExpression(op, left, right)
+}
+
+// LogicalOrExpression
+// 	: LogicalAndExpression
+// 	| LogicalOrExpression '||' LogicalAndExpression
+// 	;
+func (p *parser) logicalOrExpression() interface{} {
+	return p.logicalExpression(
+		p.logicalAndExpression,
+		tokenizer.LogicalOrOperator,
+	)
+}
+
+// LogicalAndExpression
+// 	: EqualityExpression
+// 	| LogicalAndExpression '&&' EqualityExpression
+// 	;
+func (p *parser) logicalAndExpression() interface{} {
+	return p.logicalExpression(
+		p.equalityExpression,
+		tokenizer.LogicalAndOperator,
+	)
 }
 
 // EqualityExpression

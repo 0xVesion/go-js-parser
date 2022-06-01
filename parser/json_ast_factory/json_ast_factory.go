@@ -16,6 +16,7 @@ const (
 	VariableDeclaration       = "VariableDeclaration"
 	VariableDeclarator        = "VariableDeclarator"
 	IfStatement               = "IfStatement"
+	LogicalExpression         = "LogicalExpression"
 )
 
 type factory struct{}
@@ -134,4 +135,15 @@ type ifStatement struct {
 	Test       interface{} `json:"test"`
 	Consequent interface{} `json:"consequent"`
 	Alternate  interface{} `json:"alternate"`
+}
+
+func (factory) LogicalExpression(operator string, left interface{}, right interface{}) interface{} {
+	return logicalExpression{LogicalExpression, operator, left, right}
+}
+
+type logicalExpression struct {
+	Type     `json:"type"`
+	Operator string      `json:"operator"`
+	Left     interface{} `json:"left"`
+	Right    interface{} `json:"right"`
 }
