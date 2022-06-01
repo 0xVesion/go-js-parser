@@ -1,9 +1,14 @@
 package parser_test
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"reflect"
 	"testing"
@@ -37,7 +42,36 @@ func sanatize(node map[string]interface{}, keys []string) interface{} {
 	return node
 }
 
-func acorn(exp string) interface{} {
+func hash(s string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(s))
+	hash := hasher.Sum(nil)
+
+	return hex.EncodeToString(hash)
+}
+
+func cache(src string, producer func(string) []byte) []byte {
+	path := fmt.Sprintf("/tmp/%s", hash(src))
+
+	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
+		bytes, err := os.ReadFile(path)
+		if err != nil {
+			panic(err)
+		}
+
+		return bytes
+	}
+
+	bytes := producer(src)
+	err := os.WriteFile(path, bytes, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func acornRaw(exp string) []byte {
 	cmd := exec.Command("npx", "acorn", "--ecma9")
 
 	stdin, err := cmd.StdinPipe()
@@ -54,6 +88,12 @@ func acorn(exp string) interface{} {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return out
+}
+
+func acorn(exp string) interface{} {
+	out := cache(exp, acornRaw)
 
 	x := &map[string]interface{}{}
 
