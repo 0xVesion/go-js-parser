@@ -10,6 +10,20 @@ type Token struct {
 	Value string
 }
 
+func (to Token) Is(types ...Type) bool {
+	for _, t := range types {
+		if to.Type == t {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (to Token) Not(types ...Type) bool {
+	return !to.Is(types...)
+}
+
 type tokenizer struct {
 	src    string
 	cursor int

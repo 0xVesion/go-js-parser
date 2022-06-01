@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"runtime/debug"
 
 	"github.com/0xvesion/go-js-parser/tokenizer"
 )
@@ -93,4 +94,8 @@ func (p *parser) logicalExpression(builder func() interface{}, operator tokenize
 	}
 
 	return left
+}
+
+func (p *parser) consumeAny() tokenizer.Token {
+	return p.consume(p.lookAhead.Type)
 }

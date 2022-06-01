@@ -17,6 +17,7 @@ const (
 	VariableDeclarator        = "VariableDeclarator"
 	IfStatement               = "IfStatement"
 	LogicalExpression         = "LogicalExpression"
+	UnaryExpression           = "UnaryExpression"
 )
 
 type factory struct{}
@@ -146,4 +147,15 @@ type logicalExpression struct {
 	Operator string      `json:"operator"`
 	Left     interface{} `json:"left"`
 	Right    interface{} `json:"right"`
+}
+
+func (factory) UnaryExpression(operator string, argument interface{}) interface{} {
+	return unaryExpression{UnaryExpression, operator, true, argument}
+}
+
+type unaryExpression struct {
+	Type     `json:"type"`
+	Operator string      `json:"operator"`
+	Prefix   bool        `json:"prefix"`
+	Argument interface{} `json:"argument"`
 }

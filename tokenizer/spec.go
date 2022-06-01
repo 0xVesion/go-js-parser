@@ -26,6 +26,7 @@ const (
 	EqualityOperator                = "EqualityOperator"
 	LogicalOrOperator               = "LogicalOrOperator"
 	LogicalAndOperator              = "LogicalAndOperator"
+	LogicalNotOperator              = "LogicalNotOperator"
 )
 
 type specEntry struct {
@@ -44,6 +45,7 @@ var spec = []specEntry{
 	{LogicalOrOperator, []string{`\|\|`}},
 	{LogicalAndOperator, []string{`&&`}},
 	{EqualityOperator, []string{`[!=]==?`}},
+	{LogicalNotOperator, []string{`!`}},
 	{RelationalOperator, []string{`[><]=?`}},
 	{SimpleAssignmentOperator, []string{`=`}},
 	{ComplexAssignmentOperator, []string{`[-+*/]=`}},

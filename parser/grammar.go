@@ -22,7 +22,7 @@ func (p *parser) program() interface{} {
 func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
 	sl := []interface{}{}
 
-	for p.lookAhead.Type != endLookahead {
+	for p.lookAhead.Not(endLookahead) {
 		sl = append(sl, p.statement())
 	}
 
@@ -62,7 +62,7 @@ func (p *parser) ifStatement() interface{} {
 
 	consequent := p.statement()
 
-	if p.lookAhead.Type != tokenizer.ElseKeyword {
+	if p.lookAhead.Not(tokenizer.ElseKeyword) {
 		return p.factory.IfStatement(test, consequent, nil)
 	}
 
@@ -91,7 +91,7 @@ func (p *parser) variableDeclaration() interface{} {
 func (p *parser) variableDeclaratorList() []interface{} {
 	declarations := []interface{}{p.variableDeclarator()}
 
-	for p.lookAhead.Type == tokenizer.Comma {
+	for p.lookAhead.Is(tokenizer.Comma) {
 		p.consume(tokenizer.Comma)
 		declarations = append(declarations, p.variableDeclarator())
 	}
@@ -106,8 +106,7 @@ func (p *parser) variableDeclarator() interface{} {
 	id := p.identifier()
 
 	var init interface{}
-	if p.lookAhead.Type != tokenizer.Semicolon && p.lookAhead.Type != tokenizer.Comma {
-
+	if p.lookAhead.Not(tokenizer.Semicolon, tokenizer.Comma) {
 		p.consume(tokenizer.SimpleAssignmentOperator)
 		init = p.assignmentExpression()
 	}
@@ -170,7 +169,7 @@ func (p *parser) assignmentExpression() interface{} {
 		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
-	op := p.consume(p.lookAhead.Type).Value
+	op := p.consumeAny().Value
 	right := p.assignmentExpression()
 
 	return p.factory.AssignmentExpression(op, left, right)
@@ -232,20 +231,43 @@ func (p *parser) additiveExpression() interface{} {
 }
 
 // MultiplicativeExpression
-// 	: PrimaryExpression
-// 	| MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
+// 	: UnaryExpression
+// 	| MultiplicativeExpression MULTIPLICATIVE_OPERATOR UnaryExpression
 // 	;
 func (p *parser) multiplicativeExpression() interface{} {
 	return p.binaryExpression(
-		p.primaryExpression,
+		p.unaryExpression,
 		tokenizer.MultiplicativeOperator,
 	)
+}
+
+// UnaryExpression
+// 	: LeftHandSideExpression
+// 	| ADDITIVE_OPERATOR UnaryExpression
+//	| LOGICAL_NOT UnaryExpression
+// 	;
+func (p *parser) unaryExpression() interface{} {
+	if p.lookAhead.Not(tokenizer.LogicalNotOperator, tokenizer.AdditiveOperator) {
+		return p.leftHandSideExpression()
+	}
+
+	return p.factory.UnaryExpression(
+		p.consumeAny().Value,
+		p.unaryExpression(),
+	)
+}
+
+// LeftHandSideExpression
+// 	: PrimaryExpression
+//	;
+func (p *parser) leftHandSideExpression() interface{} {
+	return p.primaryExpression()
 }
 
 // PrimaryExpression
 // 	: Literal
 //  | ParenthesizedExpression
-//  | LeftHandSideExpression
+//  | Identifier
 // 	;
 func (p *parser) primaryExpression() interface{} {
 	if p.isLookaheadLiteral() {
@@ -255,16 +277,11 @@ func (p *parser) primaryExpression() interface{} {
 	switch p.lookAhead.Type {
 	case tokenizer.OpeningParenthesis:
 		return p.parenthesizedExpression()
+	case tokenizer.Identifier:
+		return p.identifier()
 	default:
-		return p.leftHandSideExpression()
+		panic(fmt.Errorf("invalid token: %s", p.lookAhead.Type))
 	}
-}
-
-// LeftHandSideExpression
-// 	: Identifier
-// 	;
-func (p *parser) leftHandSideExpression() interface{} {
-	return p.identifier()
 }
 
 // Identifier

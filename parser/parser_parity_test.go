@@ -186,3 +186,10 @@ func TestLogicalExpressionParity(t *testing.T) {
 	test(t, `a||1!=2+2||3;`)
 	test(t, `a||1&&2+2||3;`)
 }
+
+func TestUnarityExpressionParity(t *testing.T) {
+	test(t, `-1;`)
+	test(t, `+1;`)
+	test(t, `!true;`)
+	test(t, `!!true;`)
+}

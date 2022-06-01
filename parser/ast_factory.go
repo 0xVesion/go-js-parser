@@ -14,4 +14,5 @@ type AstFactory interface {
 	VariableDeclarator(id interface{}, init interface{}) interface{}
 	IfStatement(test interface{}, consequent interface{}, alternate interface{}) interface{}
 	LogicalExpression(operator string, left interface{}, right interface{}) interface{}
+	UnaryExpression(operator string, argument interface{}) interface{}
 }
