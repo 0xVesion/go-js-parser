@@ -33,7 +33,7 @@ func New(t tokenizer.Tokenizer, factory AstFactory) Parser {
 func (p *parser) Parse() (n interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("%v", r)
+			err = fmt.Errorf("%v\nsource: %s\n%s", r, p.t.Src(), string(debug.Stack()))
 		}
 	}()
 
@@ -46,7 +46,7 @@ func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 	token := p.lookAhead
 
 	if token.Type != t {
-		panic(fmt.Errorf("Unexpected token type. want: %s got: %s", t, token.Type))
+		panic(fmt.Errorf("unexpected token type. want: %s got: %s", t, token.Type))
 	}
 
 	lookAhead, err := p.t.Next()

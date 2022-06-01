@@ -32,12 +32,22 @@ type tokenizer struct {
 type Tokenizer interface {
 	HasNext() bool
 	Next() (Token, error)
+	Src() string
+	Cursor() int
 }
 
 func New(src string) Tokenizer {
 	return &tokenizer{
 		src: src,
 	}
+}
+
+func (t *tokenizer) Cursor() int {
+	return t.cursor
+}
+
+func (t *tokenizer) Src() string {
+	return t.src
 }
 
 func (t *tokenizer) HasNext() bool {
@@ -73,5 +83,5 @@ func (t *tokenizer) Next() (Token, error) {
 		}
 	}
 
-	return Token{}, fmt.Errorf("Unknown token: %s", s)
+	return Token{}, fmt.Errorf("unknown token: %s", s)
 }
