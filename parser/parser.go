@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"runtime/debug"
+	"strings"
 
 	"github.com/0xvesion/go-js-parser/tokenizer"
 )
@@ -33,13 +34,22 @@ func New(t tokenizer.Tokenizer, factory AstFactory) Parser {
 func (p *parser) Parse() (n interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("%v\nsource: %s\n%s", r, p.t.Src(), string(debug.Stack()))
+			err = p.formatError(r)
 		}
 	}()
 
 	n = p.program()
 
 	return
+}
+
+func (p *parser) formatError(err any) error {
+	res := ""
+	for i, line := range strings.Split(p.t.Src(), "\n") {
+		res += fmt.Sprintf("%02d\t%s\n", i, line)
+	}
+
+	return fmt.Errorf("%v\n%s\n%s", err, res, string(debug.Stack()))
 }
 
 func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
