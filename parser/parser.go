@@ -45,11 +45,29 @@ func (p *parser) Parse() (n interface{}, err error) {
 
 func (p *parser) formatError(err any) error {
 	res := ""
+	cursor := p.t.Cursor()
+	resLine := 0
+	resCol := 0
+
 	for i, line := range strings.Split(p.t.Src(), "\n") {
-		res += fmt.Sprintf("%02d\t%s\n", i, line)
+		res += fmt.Sprintf("%02d  %s\n", i, line)
+		if cursor-len(line) <= 0 {
+			res += "  "
+			for ii := 0; ii < cursor; ii++ {
+				res += " "
+			}
+			res += "  ^"
+
+			resLine = i
+			resCol = cursor
+			break
+		}
+		cursor -= len(line)
 	}
 
-	return fmt.Errorf("%v\n%s\n%s", err, res, string(debug.Stack()))
+	res = fmt.Sprintf("Ln %02d, Col %02d\n%s", resLine, resCol, res)
+
+	return fmt.Errorf("%v\n%s\n%s", err, res, debug.Stack())
 }
 
 func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
