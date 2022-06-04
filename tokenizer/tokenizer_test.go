@@ -109,7 +109,7 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `const`, []Token{{VariableDeclarationKeyword, `const`}})
 	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
 	tokenizerTest(t, `letter`, []Token{{Identifier, `letter`}})
-	tokenizerTest(t, `aconst`, []Token{{Identifier, `astconst`}})
+	tokenizerTest(t, `aconst`, []Token{{Identifier, `aconst`}})
 	tokenizerTest(t, `if`, []Token{{IfKeyword, `if`}})
 	tokenizerTest(t, `else`, []Token{{ElseKeyword, `else`}})
 	tokenizerTest(t, `true`, []Token{{BooleanLiteral, `true`}})
