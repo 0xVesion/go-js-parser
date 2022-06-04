@@ -53,10 +53,10 @@ var spec = []specEntry{
 	{MultiplicativeOperator, []string{`[\/*]`}},
 	{OpeningParenthesis, []string{`\(`}},
 	{ClosingParenthesis, []string{`\)`}},
-	{VariableDeclarationKeyword, []string{`\b(let)|(const)\b`}},
+	{VariableDeclarationKeyword, []string{`\b((let)|(const))\b`}},
 	{IfKeyword, []string{`\bif\b`}},
 	{ElseKeyword, []string{`\belse\b`}},
-	{BooleanLiteral, []string{`\b(true)|(false)\b`}},
+	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},
 }

@@ -108,9 +108,13 @@ func TestRecognizesAssignmentOperator(t *testing.T) {
 func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `const`, []Token{{VariableDeclarationKeyword, `const`}})
 	tokenizerTest(t, `let`, []Token{{VariableDeclarationKeyword, `let`}})
+	tokenizerTest(t, `letter`, []Token{{Identifier, `letter`}})
+	tokenizerTest(t, `aconst`, []Token{{Identifier, `astconst`}})
 	tokenizerTest(t, `if`, []Token{{IfKeyword, `if`}})
 	tokenizerTest(t, `else`, []Token{{ElseKeyword, `else`}})
 	tokenizerTest(t, `true`, []Token{{BooleanLiteral, `true`}})
+	tokenizerTest(t, `trueism`, []Token{{Identifier, `trueism`}})
+	tokenizerTest(t, `sofalse`, []Token{{Identifier, `sofalse`}})
 	tokenizerTest(t, `false`, []Token{{BooleanLiteral, `false`}})
 	tokenizerTest(t, `null`, []Token{{NullLiteral, `null`}})
 }
