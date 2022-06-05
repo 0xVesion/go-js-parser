@@ -8,6 +8,8 @@ import (
 type Token struct {
 	Type
 	Value string
+	Start int
+	End   int
 }
 
 func (to Token) Is(types ...Type) bool {
@@ -60,6 +62,7 @@ func (t *tokenizer) Next() (Token, error) {
 	}
 
 	s := t.src[t.cursor:]
+	tokenStart := t.cursor
 	for _, current := range spec {
 		for _, expr := range current.Regexp {
 			r, err := regexp.Compile(expr)
@@ -79,7 +82,7 @@ func (t *tokenizer) Next() (Token, error) {
 				return t.Next()
 			}
 
-			return Token{current.Type, match}, nil
+			return Token{current.Type, match, tokenStart, t.cursor}, nil
 		}
 	}
 
