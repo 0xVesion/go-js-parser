@@ -32,11 +32,11 @@ func parserTest(t *testing.T, src string, expected interface{}) {
 }
 
 func TestNumber(t *testing.T) {
-	parserTest(t, `123;`, factory.Program(factory.ExpressionStatement(factory.Literal(123))))
+	parserTest(t, `123;`, factory.Program(factory.ExpressionStatement(factory.Literal(123, 0, 3))))
 }
 
 func TestStrings(t *testing.T) {
-	parserTest(t, `"Hello World!";`, factory.Program(factory.ExpressionStatement(factory.Literal("Hello World!"))))
+	parserTest(t, `"Hello World!";`, factory.Program(factory.ExpressionStatement(factory.Literal("Hello World!", 0, 14))))
 }
 
 func TestStatements(t *testing.T) {
@@ -44,9 +44,9 @@ func TestStatements(t *testing.T) {
 		t,
 		`1;2;3;`,
 		factory.Program(
-			factory.ExpressionStatement(factory.Literal(1)),
-			factory.ExpressionStatement(factory.Literal(2)),
-			factory.ExpressionStatement(factory.Literal(3)),
+			factory.ExpressionStatement(factory.Literal(1, 0, 1)),
+			factory.ExpressionStatement(factory.Literal(2, 2, 3)),
+			factory.ExpressionStatement(factory.Literal(3, 4, 5)),
 		))
 }
 
@@ -65,9 +65,9 @@ func TestBlockStatement(t *testing.T) {
 			}
 		}`,
 		factory.Program(factory.BlockStatement(
-			factory.ExpressionStatement(factory.Literal("Hello World!")),
+			factory.ExpressionStatement(factory.Literal("Hello World!", 5, 19)),
 			factory.BlockStatement(
-				factory.ExpressionStatement(factory.Literal(123)),
+				factory.ExpressionStatement(factory.Literal(123, 30, 33)),
 			),
 		)))
 
@@ -79,8 +79,8 @@ func TestBlockStatement(t *testing.T) {
 		}`,
 		factory.Program(
 			factory.BlockStatement(
-				factory.ExpressionStatement(factory.Literal(123)),
-				factory.ExpressionStatement(factory.Literal("Hello World!")),
+				factory.ExpressionStatement(factory.Literal(123, 5, 8)),
+				factory.ExpressionStatement(factory.Literal("Hello World!", 13, 27)),
 			),
 		),
 	)
@@ -102,8 +102,8 @@ func TestAdditiveExpression(t *testing.T) {
 		factory.Program(
 			factory.ExpressionStatement(factory.BinaryExpression(
 				"+",
-				factory.Literal(1),
-				factory.Literal(1),
+				factory.Literal(1, 0, 1),
+				factory.Literal(1, 2, 3),
 			)),
 		))
 
@@ -113,8 +113,8 @@ func TestAdditiveExpression(t *testing.T) {
 		factory.Program(
 			factory.ExpressionStatement(factory.BinaryExpression(
 				"-",
-				factory.Literal(1),
-				factory.Literal(1),
+				factory.Literal(1, 0, 1),
+				factory.Literal(1, 2, 3),
 			)),
 		))
 
@@ -126,10 +126,10 @@ func TestAdditiveExpression(t *testing.T) {
 				"-",
 				factory.BinaryExpression(
 					"+",
-					factory.Literal(1),
-					factory.Literal(1),
+					factory.Literal(1, 0, 1),
+					factory.Literal(1, 2, 3),
 				),
-				factory.Literal(2),
+				factory.Literal(2, 4, 5),
 			)),
 		))
 }
@@ -141,8 +141,8 @@ func TestMultiplicativeExpression(t *testing.T) {
 		factory.Program(
 			factory.ExpressionStatement(factory.BinaryExpression(
 				"*",
-				factory.Literal(1),
-				factory.Literal(1),
+				factory.Literal(1, 0, 1),
+				factory.Literal(1, 2, 3),
 			)),
 		))
 
@@ -152,8 +152,8 @@ func TestMultiplicativeExpression(t *testing.T) {
 		factory.Program(
 			factory.ExpressionStatement(factory.BinaryExpression(
 				"/",
-				factory.Literal(1),
-				factory.Literal(1),
+				factory.Literal(1, 0, 1),
+				factory.Literal(1, 2, 3),
 			)),
 		))
 
@@ -163,11 +163,11 @@ func TestMultiplicativeExpression(t *testing.T) {
 		factory.Program(
 			factory.ExpressionStatement(factory.BinaryExpression(
 				"+",
-				factory.Literal(2),
+				factory.Literal(2, 0, 1),
 				factory.BinaryExpression(
 					"*",
-					factory.Literal(2),
-					factory.Literal(2),
+					factory.Literal(2, 2, 3),
+					factory.Literal(2, 4, 5),
 				),
 			)),
 		))
@@ -180,10 +180,10 @@ func TestMultiplicativeExpression(t *testing.T) {
 				"*",
 				factory.BinaryExpression(
 					"*",
-					factory.Literal(2),
-					factory.Literal(2),
+					factory.Literal(2, 0, 1),
+					factory.Literal(2, 2, 3),
 				),
-				factory.Literal(2),
+				factory.Literal(2, 4, 5),
 			)),
 		))
 }
@@ -197,10 +197,10 @@ func TestMultiplicativeExpressionPrecedence(t *testing.T) {
 				"*",
 				factory.BinaryExpression(
 					"+",
-					factory.Literal(2),
-					factory.Literal(2),
+					factory.Literal(2, 1, 2),
+					factory.Literal(2, 3, 4),
 				),
-				factory.Literal(2),
+				factory.Literal(2, 6, 7),
 			)),
 		))
 }

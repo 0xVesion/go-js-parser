@@ -29,10 +29,12 @@ func New() parser.AstFactory {
 type literal struct {
 	Type  `json:"type"`
 	Value interface{} `json:"value"`
+	Start int         `json:"start"`
+	End   int         `json:"end"`
 }
 
-func (factory) Literal(val interface{}) interface{} {
-	return literal{Literal, val}
+func (factory) Literal(val interface{}, start int, end int) interface{} {
+	return literal{Literal, val, start, end}
 }
 
 type blockStatement struct {

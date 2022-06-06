@@ -1,7 +1,7 @@
 package parser
 
 type AstFactory interface {
-	Literal(interface{}) interface{}
+	Literal(interface{}, int, int) interface{}
 	ExpressionStatement(interface{}) interface{}
 	BlockStatement(...interface{}) interface{}
 	Program(...interface{}) interface{}

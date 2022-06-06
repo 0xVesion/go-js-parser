@@ -111,7 +111,7 @@ func goParser(src string) interface{} {
 	x := &map[string]interface{}{}
 	json.Unmarshal(actualAstJson, x)
 
-	return *x
+	return sanatize(*x, []string{"start", "end", "sourceType", "raw", "directive"})
 }
 
 func test(t *testing.T, src string) {
