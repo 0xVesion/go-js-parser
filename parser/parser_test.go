@@ -54,7 +54,7 @@ func TestBlockStatement(t *testing.T) {
 	parserTest(
 		t,
 		`{}`,
-		factory.Program(factory.BlockStatement([]interface{}{}...)))
+		factory.Program(factory.BlockStatement(0, 2, []interface{}{}...)))
 
 	parserTest(
 		t,
@@ -64,9 +64,9 @@ func TestBlockStatement(t *testing.T) {
 				123;
 			}
 		}`,
-		factory.Program(factory.BlockStatement(
+		factory.Program(factory.BlockStatement(0, 43,
 			factory.ExpressionStatement(factory.Literal("Hello World!", 5, 19)),
-			factory.BlockStatement(
+			factory.BlockStatement(24, 39,
 				factory.ExpressionStatement(factory.Literal(123, 30, 33)),
 			),
 		)))
@@ -78,7 +78,7 @@ func TestBlockStatement(t *testing.T) {
 			"Hello World!";
 		}`,
 		factory.Program(
-			factory.BlockStatement(
+			factory.BlockStatement(0, 32,
 				factory.ExpressionStatement(factory.Literal(123, 5, 8)),
 				factory.ExpressionStatement(factory.Literal("Hello World!", 13, 27)),
 			),

@@ -38,12 +38,14 @@ func (factory) Literal(val interface{}, start int, end int) interface{} {
 }
 
 type blockStatement struct {
-	Type `json:"type"`
-	Body []interface{} `json:"body"`
+	Type  `json:"type"`
+	Body  []interface{} `json:"body"`
+	Start int           `json:"start"`
+	End   int           `json:"end"`
 }
 
-func (factory) BlockStatement(sl ...interface{}) interface{} {
-	return blockStatement{BlockStatement, sl}
+func (factory) BlockStatement(start int, end int, sl ...interface{}) interface{} {
+	return blockStatement{BlockStatement, sl, start, end}
 }
 
 type program struct {

@@ -127,13 +127,13 @@ func (p *parser) emptyStatement() interface{} {
 // 	: '{' StatementList '}'
 // 	;
 func (p *parser) blockStatement() interface{} {
-	p.consume(tokenizer.OpeningCurlyBrace)
+	start := p.consume(tokenizer.OpeningCurlyBrace).Start
 
 	sl := p.statementList(tokenizer.ClosingCurlyBrace)
 
-	p.consume(tokenizer.ClosingCurlyBrace)
+	end := p.consume(tokenizer.ClosingCurlyBrace).End
 
-	return p.factory.BlockStatement(sl...)
+	return p.factory.BlockStatement(start, end, sl...)
 }
 
 // ExpressionStatment

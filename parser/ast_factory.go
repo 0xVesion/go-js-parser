@@ -3,7 +3,7 @@ package parser
 type AstFactory interface {
 	Literal(interface{}, int, int) interface{}
 	ExpressionStatement(interface{}) interface{}
-	BlockStatement(...interface{}) interface{}
+	BlockStatement(start int, end int, sl ...interface{}) interface{}
 	Program(...interface{}) interface{}
 	EmptyStatement() interface{}
 	BinaryExpression(operator string, left interface{}, right interface{}) interface{}
