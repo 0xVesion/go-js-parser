@@ -49,12 +49,14 @@ func (factory) BlockStatement(start int, end int, sl ...interface{}) interface{}
 }
 
 type program struct {
-	Type `json:"type"`
-	Body []interface{} `json:"body"`
+	Type  `json:"type"`
+	Body  []interface{} `json:"body"`
+	Start int           `json:"start"`
+	End   int           `json:"end"`
 }
 
-func (factory) Program(sl ...interface{}) interface{} {
-	return program{Program, sl}
+func (factory) Program(start int, end int, sl ...interface{}) interface{} {
+	return program{Program, sl, start, end}
 }
 
 type emptyStatement struct {

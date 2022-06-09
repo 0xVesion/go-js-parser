@@ -12,7 +12,7 @@ import (
 // 	: StatementList
 // 	;
 func (p *parser) program() interface{} {
-	return p.factory.Program(p.statementList(tokenizer.None)...)
+	return p.factory.Program(0, len(p.t.Src()), p.statementList(tokenizer.None)...)
 }
 
 // StatementList
