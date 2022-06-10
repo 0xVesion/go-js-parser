@@ -118,9 +118,9 @@ func (p *parser) variableDeclarator() interface{} {
 // 	: ';'
 // 	;
 func (p *parser) emptyStatement() interface{} {
-	p.consume(tokenizer.Semicolon)
+	t := p.consume(tokenizer.Semicolon)
 
-	return p.factory.EmptyStatement()
+	return p.factory.EmptyStatement(t.Start, t.End)
 }
 
 // BlockStatement

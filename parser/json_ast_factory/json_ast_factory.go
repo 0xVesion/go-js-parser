@@ -60,11 +60,13 @@ func (factory) Program(start int, end int, sl ...interface{}) interface{} {
 }
 
 type emptyStatement struct {
-	Type `json:"type"`
+	Type  `json:"type"`
+	Start int `json:"start"`
+	End   int `json:"end"`
 }
 
-func (factory) EmptyStatement() interface{} {
-	return emptyStatement{EmptyStatement}
+func (factory) EmptyStatement(start int, end int) interface{} {
+	return emptyStatement{EmptyStatement, start, end}
 }
 
 type expressionStatement struct {

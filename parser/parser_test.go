@@ -94,7 +94,7 @@ func TestEmptyStatement(t *testing.T) {
 		`;`,
 		factory.Program(
 			0, 1,
-			factory.EmptyStatement(),
+			factory.EmptyStatement(0, 1),
 		))
 }
 
