@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/0xvesion/go-js-parser/parser"
-	jsonastfactory "github.com/0xvesion/go-js-parser/parser/json_ast_factory"
 	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
@@ -14,7 +13,7 @@ func main() {
 	1+1;
 	2+2*2;
 	"Hello World!";
-	`), jsonastfactory.New()).Parse()
+	`)).Parse()
 	if err != nil {
 		panic(err)
 	}

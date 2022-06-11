@@ -14,7 +14,6 @@ import (
 	"testing"
 
 	"github.com/0xvesion/go-js-parser/parser"
-	jsonastfactory "github.com/0xvesion/go-js-parser/parser/json_ast_factory"
 	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
@@ -103,7 +102,7 @@ func acorn(exp string) interface{} {
 }
 
 func goParser(src string) interface{} {
-	actualAst, err := parser.New(tokenizer.New(src), jsonastfactory.New()).Parse()
+	actualAst, err := parser.New(tokenizer.New(src)).Parse()
 	if err != nil {
 		log.Fatal(err)
 	}

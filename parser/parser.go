@@ -14,11 +14,10 @@ type Parser interface {
 
 type parser struct {
 	t         tokenizer.Tokenizer
-	factory   AstFactory
 	lookAhead tokenizer.Token
 }
 
-func New(t tokenizer.Tokenizer, factory AstFactory) Parser {
+func New(t tokenizer.Tokenizer) Parser {
 	lookAhead, err := t.Next()
 	if err != nil {
 		panic(err)
@@ -27,7 +26,6 @@ func New(t tokenizer.Tokenizer, factory AstFactory) Parser {
 	return &parser{
 		t:         t,
 		lookAhead: lookAhead,
-		factory:   factory,
 	}
 }
 
@@ -93,7 +91,7 @@ func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer
 		operator := p.consume(operator)
 		right := builder()
 
-		left = p.factory.BinaryExpression(operator.Value, left, right)
+		left = NewBinaryExpression(operator.Value, left, right)
 	}
 
 	return left
@@ -118,7 +116,7 @@ func (p *parser) logicalExpression(builder func() interface{}, operator tokenize
 		operator := p.consume(operator)
 		right := builder()
 
-		left = p.factory.LogicalExpression(operator.Value, left, right)
+		left = NewLogicalExpression(operator.Value, left, right)
 	}
 
 	return left

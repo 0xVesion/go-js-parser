@@ -12,7 +12,7 @@ import (
 // 	: StatementList
 // 	;
 func (p *parser) program() interface{} {
-	return p.factory.Program(0, len(p.t.Src()), p.statementList(tokenizer.None)...)
+	return NewProgram(0, len(p.t.Src()), p.statementList(tokenizer.None)...)
 }
 
 // StatementList
@@ -63,14 +63,14 @@ func (p *parser) ifStatement() interface{} {
 	consequent := p.statement()
 
 	if p.lookAhead.Not(tokenizer.ElseKeyword) {
-		return p.factory.IfStatement(test, consequent, nil)
+		return NewIfStatement(test, consequent, nil)
 	}
 
 	p.consume(tokenizer.ElseKeyword)
 
 	alternate := p.statement()
 
-	return p.factory.IfStatement(test, consequent, alternate)
+	return NewIfStatement(test, consequent, alternate)
 }
 
 // VariableDeclaration
@@ -81,7 +81,7 @@ func (p *parser) variableDeclaration() interface{} {
 	declarations := p.variableDeclaratorList()
 	p.consume(tokenizer.Semicolon)
 
-	return p.factory.VariableDeclaration(kind.Value, declarations)
+	return NewVariableDeclaration(kind.Value, declarations)
 }
 
 // VariableDeclaratorList
@@ -111,7 +111,7 @@ func (p *parser) variableDeclarator() interface{} {
 		init = p.assignmentExpression()
 	}
 
-	return p.factory.VariableDeclarator(id, init)
+	return NewVariableDeclarator(id, init)
 }
 
 // EmptyStatement
@@ -120,7 +120,7 @@ func (p *parser) variableDeclarator() interface{} {
 func (p *parser) emptyStatement() interface{} {
 	t := p.consume(tokenizer.Semicolon)
 
-	return p.factory.EmptyStatement(t.Start, t.End)
+	return NewEmptyStatement(t.Start, t.End)
 }
 
 // BlockStatement
@@ -133,7 +133,7 @@ func (p *parser) blockStatement() interface{} {
 
 	end := p.consume(tokenizer.ClosingCurlyBrace).End
 
-	return p.factory.BlockStatement(start, end, sl...)
+	return NewBlockStatement(start, end, sl...)
 }
 
 // ExpressionStatment
@@ -145,7 +145,7 @@ func (p *parser) expressionStatment() interface{} {
 
 	semi := p.consume(tokenizer.Semicolon)
 
-	return p.factory.ExpressionStatement(exp, start, semi.End)
+	return NewExpressionStatement(exp, start, semi.End)
 }
 
 // Expression
@@ -166,14 +166,14 @@ func (p *parser) assignmentExpression() interface{} {
 		return left
 	}
 
-	if !p.factory.IsIdentifier(left) {
+	if !NewIsIdentifier(left) {
 		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
 	op := p.consumeAny().Value
 	right := p.assignmentExpression()
 
-	return p.factory.AssignmentExpression(op, left, right)
+	return NewAssignmentExpression(op, left, right)
 }
 
 // LogicalOrExpression
@@ -252,7 +252,7 @@ func (p *parser) unaryExpression() interface{} {
 		return p.leftHandSideExpression()
 	}
 
-	return p.factory.UnaryExpression(
+	return NewUnaryExpression(
 		p.consumeAny().Value,
 		p.unaryExpression(),
 	)
@@ -289,7 +289,7 @@ func (p *parser) primaryExpression() interface{} {
 // 	: IDENTIFIER
 // 	;
 func (p *parser) identifier() interface{} {
-	return p.factory.Identifier(p.consume(tokenizer.Identifier).Value)
+	return NewIdentifier(p.consume(tokenizer.Identifier).Value)
 }
 
 // ParenthesizedExpression
@@ -333,7 +333,7 @@ func (p *parser) literal() interface{} {
 func (p *parser) booleanLiteral() interface{} {
 	token := p.consume(tokenizer.BooleanLiteral)
 
-	return p.factory.Literal(token.Value == "true", token.Start, token.End)
+	return NewLiteral(token.Value == "true", token.Start, token.End)
 }
 
 // NullLiteral
@@ -342,7 +342,7 @@ func (p *parser) booleanLiteral() interface{} {
 func (p *parser) nullLiteral() interface{} {
 	token := p.consume(tokenizer.NullLiteral)
 
-	return p.factory.Literal(nil, token.Start, token.End)
+	return NewLiteral(nil, token.Start, token.End)
 }
 
 // NumericLiteral
@@ -356,7 +356,7 @@ func (p *parser) numericLiteral() interface{} {
 		panic(err)
 	}
 
-	return p.factory.Literal(value, token.Start, token.End)
+	return NewLiteral(value, token.Start, token.End)
 }
 
 // StringLiteral
@@ -365,5 +365,5 @@ func (p *parser) numericLiteral() interface{} {
 func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)
 
-	return p.factory.Literal(token.Value[1:len(token.Value)-1], token.Start, token.End)
+	return NewLiteral(token.Value[1:len(token.Value)-1], token.Start, token.End)
 }
