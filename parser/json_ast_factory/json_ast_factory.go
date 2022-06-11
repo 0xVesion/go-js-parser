@@ -72,10 +72,12 @@ func (factory) EmptyStatement(start int, end int) interface{} {
 type expressionStatement struct {
 	Type       `json:"type"`
 	Expression interface{} `json:"expression"`
+	Start      int         `json:"start"`
+	End        int         `json:"end"`
 }
 
-func (factory) ExpressionStatement(exp interface{}) interface{} {
-	return expressionStatement{ExpressionStatement, exp}
+func (factory) ExpressionStatement(exp interface{}, start int, end int) interface{} {
+	return expressionStatement{ExpressionStatement, exp, start, end}
 }
 
 func (factory) BinaryExpression(operator string, left interface{}, right interface{}) interface{} {

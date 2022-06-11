@@ -140,11 +140,12 @@ func (p *parser) blockStatement() interface{} {
 // 	: Expression ';'
 // 	;
 func (p *parser) expressionStatment() interface{} {
-	e := p.expression()
+	start := p.lookAhead.Start
+	exp := p.expression()
 
-	p.consume(tokenizer.Semicolon)
+	semi := p.consume(tokenizer.Semicolon)
 
-	return p.factory.ExpressionStatement(e)
+	return p.factory.ExpressionStatement(exp, start, semi.End)
 }
 
 // Expression
