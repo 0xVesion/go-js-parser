@@ -100,12 +100,6 @@ func NewIdentifier(name string) IdentifierNode {
 	return IdentifierNode{Node{Identifier, 0, 0}, name}
 }
 
-func NewIsIdentifier(val interface{}) bool {
-	_, ok := val.(IdentifierNode)
-
-	return ok
-}
-
 type VariableDeclarationNode struct {
 	Node
 	Kind         string        `json:"kind"`

@@ -166,7 +166,7 @@ func (p *parser) assignmentExpression() interface{} {
 		return left
 	}
 
-	if !NewIsIdentifier(left) {
+	if _, isIdentifier := left.(IdentifierNode); !isIdentifier {
 		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
