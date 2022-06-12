@@ -145,7 +145,7 @@ func (p *parser) expressionStatment() interface{} {
 
 	semi := p.consume(tokenizer.Semicolon)
 
-	return NewExpressionStatement(exp, start, semi.End)
+	return NewExpressionStatement(start, semi.End, exp)
 }
 
 // Expression
@@ -333,7 +333,7 @@ func (p *parser) literal() interface{} {
 func (p *parser) booleanLiteral() interface{} {
 	token := p.consume(tokenizer.BooleanLiteral)
 
-	return NewLiteral(token.Value == "true", token.Start, token.End)
+	return NewLiteral(token.Start, token.End, token.Value == "true")
 }
 
 // NullLiteral
@@ -342,7 +342,7 @@ func (p *parser) booleanLiteral() interface{} {
 func (p *parser) nullLiteral() interface{} {
 	token := p.consume(tokenizer.NullLiteral)
 
-	return NewLiteral(nil, token.Start, token.End)
+	return NewLiteral(token.Start, token.End, nil)
 }
 
 // NumericLiteral
@@ -356,7 +356,7 @@ func (p *parser) numericLiteral() interface{} {
 		panic(err)
 	}
 
-	return NewLiteral(value, token.Start, token.End)
+	return NewLiteral(token.Start, token.End, value)
 }
 
 // StringLiteral
@@ -365,5 +365,5 @@ func (p *parser) numericLiteral() interface{} {
 func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)
 
-	return NewLiteral(token.Value[1:len(token.Value)-1], token.Start, token.End)
+	return NewLiteral(token.Start, token.End, token.Value[1:len(token.Value)-1])
 }
