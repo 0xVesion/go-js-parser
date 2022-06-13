@@ -82,9 +82,9 @@ func (p *parser) ifStatement() Node {
 func (p *parser) variableDeclaration() Node {
 	kind := p.consume(tokenizer.VariableDeclarationKeyword)
 	declarations := p.variableDeclaratorList()
-	p.consume(tokenizer.Semicolon)
+	end := p.consume(tokenizer.Semicolon).End
 
-	return NewVariableDeclaration(kind.Value, declarations)
+	return NewVariableDeclaration(kind.Start, end, kind.Value, declarations)
 }
 
 // VariableDeclaratorList
@@ -109,12 +109,14 @@ func (p *parser) variableDeclarator() Node {
 	id := p.identifier()
 
 	var init Node
+	end := id.End()
 	if p.lookAhead.Not(tokenizer.Semicolon, tokenizer.Comma) {
 		p.consume(tokenizer.SimpleAssignmentOperator)
 		init = p.assignmentExpression()
+		end = init.End()
 	}
 
-	return NewVariableDeclarator(id, init)
+	return NewVariableDeclarator(id.Start(), end, id, init)
 }
 
 // EmptyStatement

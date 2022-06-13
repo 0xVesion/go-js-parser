@@ -117,8 +117,8 @@ func NewAssignmentExpression(start int, end int, operator string, left Node, rig
 	return n
 }
 
-func NewVariableDeclaration(kind string, declarations []Node) Node {
-	n := NewNode(VariableDeclaration, 0, 0)
+func NewVariableDeclaration(start int, end int, kind string, declarations []Node) Node {
+	n := NewNode(VariableDeclaration, start, end)
 
 	n["kind"] = kind
 	n["declarations"] = declarations
@@ -126,8 +126,8 @@ func NewVariableDeclaration(kind string, declarations []Node) Node {
 	return n
 }
 
-func NewVariableDeclarator(id Node, init Node) Node {
-	n := NewNode(VariableDeclarator, 0, 0)
+func NewVariableDeclarator(start int, end int, id Node, init Node) Node {
+	n := NewNode(VariableDeclarator, start, end)
 
 	n["id"] = id
 	n["init"] = init

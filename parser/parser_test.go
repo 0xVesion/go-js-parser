@@ -164,19 +164,14 @@ func TestEmptyStatementParity(t *testing.T) {
 
 func TestAdditiveExpressionParity(t *testing.T) {
 	test(t, `1+1;`)
-
 	test(t, `1-1;`)
-
 	test(t, `1+1-2;`)
 }
 
 func TestMultiplicativeExpressionParity(t *testing.T) {
 	test(t, `1*1;`)
-
 	test(t, `1/1;`)
-
 	test(t, `2+2*2;`)
-
 	test(t, `2*2*2;`)
 }
 
@@ -193,10 +188,10 @@ func TestAssignments(t *testing.T) {
 }
 
 func TestVariableDeclaration(t *testing.T) {
-	sanatizeTest(t, `let a;`)
-	sanatizeTest(t, `let a = 1;`)
-	sanatizeTest(t, `let a, b;`)
-	sanatizeTest(t, `let a, b = 1;`)
+	test(t, `let a;`)
+	test(t, `let a = 1;`)
+	test(t, `let a, b;`)
+	test(t, `let a, b = 1;`)
 }
 
 func TestIfStatement(t *testing.T) {
@@ -208,7 +203,7 @@ func TestIfStatement(t *testing.T) {
 func TestRelationalExpression(t *testing.T) {
 	test(t, `1>2;`)
 	test(t, `1+1<=2;`)
-	sanatizeTest(t, `a>b>c;`)
+	test(t, `a>b>c;`)
 }
 
 func TestBooleanParity(t *testing.T) {
