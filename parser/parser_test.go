@@ -220,7 +220,7 @@ func TestNullParity(t *testing.T) {
 
 func TestEqualityParity(t *testing.T) {
 	test(t, `1==2;`)
-	sanatizeTest(t, `a+1!=2+2*3;`)
+	test(t, `a+1!=2+2*3;`)
 	sanatizeTest(t, `if(1!=2) res = 200;`)
 }
 

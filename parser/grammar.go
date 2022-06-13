@@ -292,7 +292,9 @@ func (p *parser) primaryExpression() interface{} {
 // 	: IDENTIFIER
 // 	;
 func (p *parser) identifier() interface{} {
-	return NewIdentifier(p.consume(tokenizer.Identifier).Value)
+	id := p.consume(tokenizer.Identifier)
+
+	return NewIdentifier(id.Start, id.End, id.Value)
 }
 
 // ParenthesizedExpression

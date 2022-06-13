@@ -98,8 +98,8 @@ type IdentifierNode struct {
 	Name string `json:"name"`
 }
 
-func NewIdentifier(name string) IdentifierNode {
-	return IdentifierNode{Node{Identifier, 0, 0}, name}
+func NewIdentifier(start int, end int, name string) IdentifierNode {
+	return IdentifierNode{Node{Identifier, start, end}, name}
 }
 
 type VariableDeclarationNode struct {
