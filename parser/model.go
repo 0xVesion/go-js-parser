@@ -27,10 +27,11 @@ type Node struct {
 type LiteralNode struct {
 	Node
 	Value interface{} `json:"value"`
+	Raw   interface{} `json:"raw"`
 }
 
-func NewLiteral(start int, end int, val interface{}) LiteralNode {
-	return LiteralNode{Node{Literal, start, end}, val}
+func NewLiteral(start int, end int, val interface{}, raw string) LiteralNode {
+	return LiteralNode{Node{Literal, start, end}, val, raw}
 }
 
 type BlockStatementNode struct {

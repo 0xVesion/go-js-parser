@@ -336,7 +336,7 @@ func (p *parser) literal() interface{} {
 func (p *parser) booleanLiteral() interface{} {
 	token := p.consume(tokenizer.BooleanLiteral)
 
-	return NewLiteral(token.Start, token.End, token.Value == "true")
+	return NewLiteral(token.Start, token.End, token.Value == "true", token.Value)
 }
 
 // NullLiteral
@@ -345,7 +345,7 @@ func (p *parser) booleanLiteral() interface{} {
 func (p *parser) nullLiteral() interface{} {
 	token := p.consume(tokenizer.NullLiteral)
 
-	return NewLiteral(token.Start, token.End, nil)
+	return NewLiteral(token.Start, token.End, nil, token.Value)
 }
 
 // NumericLiteral
@@ -359,7 +359,7 @@ func (p *parser) numericLiteral() interface{} {
 		panic(err)
 	}
 
-	return NewLiteral(token.Start, token.End, value)
+	return NewLiteral(token.Start, token.End, value, token.Value)
 }
 
 // StringLiteral
@@ -368,5 +368,5 @@ func (p *parser) numericLiteral() interface{} {
 func (p *parser) stringLiteral() interface{} {
 	token := p.consume(tokenizer.String)
 
-	return NewLiteral(token.Start, token.End, token.Value[1:len(token.Value)-1])
+	return NewLiteral(token.Start, token.End, token.Value[1:len(token.Value)-1], token.Value)
 }

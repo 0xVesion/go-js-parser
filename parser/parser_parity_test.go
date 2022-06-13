@@ -126,7 +126,7 @@ func test(t *testing.T, src string, sanatizeKeys ...string) {
 }
 
 func sanatizeTest(t *testing.T, src string) {
-	test(t, src, "start", "end", "raw")
+	test(t, src, "start", "end")
 }
 
 func TestNumberParity(t *testing.T) {
