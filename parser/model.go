@@ -78,8 +78,8 @@ type BinaryExpressionNode struct {
 	Right    interface{} `json:"right"`
 }
 
-func NewBinaryExpression(operator string, left interface{}, right interface{}) BinaryExpressionNode {
-	return BinaryExpressionNode{Node{BinaryExpression, 0, 0}, operator, left, right}
+func NewBinaryExpression(start int, end int, operator string, left interface{}, right interface{}) BinaryExpressionNode {
+	return BinaryExpressionNode{Node{BinaryExpression, start, end}, operator, left, right}
 }
 
 type AssignmentExpressionNode struct {

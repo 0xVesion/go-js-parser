@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"reflect"
 	"runtime/debug"
 	"strings"
 
@@ -91,7 +92,7 @@ func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer
 		operator := p.consume(operator)
 		right := builder()
 
-		left = NewBinaryExpression(operator.Value, left, right)
+		left = NewBinaryExpression(GetNode(left).Start, GetNode(right).End, operator.Value, left, right)
 	}
 
 	return left
@@ -139,4 +140,14 @@ func (p *parser) addDirectives(sl []interface{}) []interface{} {
 	}
 
 	return sl
+}
+
+func GetNode(n interface{}) Node {
+	node := reflect.ValueOf(n).Field(0)
+
+	return Node{
+		Type:  Type(node.Field(0).String()),
+		Start: int(node.Field(1).Int()),
+		End:   int(node.Field(2).Int()),
+	}
 }

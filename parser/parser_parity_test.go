@@ -130,28 +130,28 @@ func sanatizeTest(t *testing.T, src string) {
 }
 
 func TestNumberParity(t *testing.T) {
-	sanatizeTest(t, `123;`)
+	test(t, `123;`)
 }
 
 func TestStringsParity(t *testing.T) {
-	sanatizeTest(t, `"Hello World!";`)
+	test(t, `"Hello World!";`)
 }
 
 func TestStatementsParity(t *testing.T) {
-	sanatizeTest(t, `1;2;3;`)
+	test(t, `1;2;3;`)
 }
 
 func TestBlockStatementParity(t *testing.T) {
-	sanatizeTest(t, `{}`)
+	test(t, `{}`)
 
-	sanatizeTest(t, `{
+	test(t, `{
 			"Hello World!";
 			{
 				123;
 			}
 		}`)
 
-	sanatizeTest(t,
+	test(t,
 		`{
 			123;
 			"Hello World!";
@@ -159,25 +159,25 @@ func TestBlockStatementParity(t *testing.T) {
 }
 
 func TestEmptyStatementParity(t *testing.T) {
-	sanatizeTest(t, `;`)
+	test(t, `;`)
 }
 
 func TestAdditiveExpressionParity(t *testing.T) {
-	sanatizeTest(t, `1+1;`)
+	test(t, `1+1;`)
 
-	sanatizeTest(t, `1-1;`)
+	test(t, `1-1;`)
 
-	sanatizeTest(t, `1+1-2;`)
+	test(t, `1+1-2;`)
 }
 
 func TestMultiplicativeExpressionParity(t *testing.T) {
-	sanatizeTest(t, `1*1;`)
+	test(t, `1*1;`)
 
-	sanatizeTest(t, `1/1;`)
+	test(t, `1/1;`)
 
-	sanatizeTest(t, `2+2*2;`)
+	test(t, `2+2*2;`)
 
-	sanatizeTest(t, `2*2*2;`)
+	test(t, `2*2*2;`)
 }
 
 func TestMultiplicativeExpressionPrecedenceParity(t *testing.T) {
@@ -204,22 +204,22 @@ func TestIfStatement(t *testing.T) {
 }
 
 func TestRelationalExpression(t *testing.T) {
-	sanatizeTest(t, `1>2;`)
-	sanatizeTest(t, `1+1<=2;`)
-	sanatizeTest(t, `a>a>a;`)
+	test(t, `1>2;`)
+	test(t, `1+1<=2;`)
+	sanatizeTest(t, `a>b>c;`)
 }
 
 func TestBooleanParity(t *testing.T) {
-	sanatizeTest(t, `true;`)
-	sanatizeTest(t, `false;`)
+	test(t, `true;`)
+	test(t, `false;`)
 }
 
 func TestNullParity(t *testing.T) {
-	sanatizeTest(t, `null;`)
+	test(t, `null;`)
 }
 
 func TestEqualityParity(t *testing.T) {
-	sanatizeTest(t, `1==2;`)
+	test(t, `1==2;`)
 	sanatizeTest(t, `a+1!=2+2*3;`)
 	sanatizeTest(t, `if(1!=2) res = 200;`)
 }
