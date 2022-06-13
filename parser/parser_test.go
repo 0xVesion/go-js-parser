@@ -181,7 +181,9 @@ func TestMultiplicativeExpressionParity(t *testing.T) {
 }
 
 func TestMultiplicativeExpressionPrecedenceParity(t *testing.T) {
-	sanatizeTest(t, `(2+2)*2;`)
+	test(t, `(1+2)*3;`)
+	test(t, `3*(1+2);`)
+	test(t, `((5+5) * (6+4)) / 5;`)
 }
 
 func TestAssignments(t *testing.T) {

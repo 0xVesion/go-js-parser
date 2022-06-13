@@ -13,8 +13,9 @@ type Parser interface {
 }
 
 type parser struct {
-	t         tokenizer.Tokenizer
-	lookAhead tokenizer.Token
+	t          tokenizer.Tokenizer
+	lookAhead  tokenizer.Token
+	lookBehind tokenizer.Token
 }
 
 func New(t tokenizer.Tokenizer) Parser {
@@ -80,18 +81,32 @@ func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 		panic(err)
 	}
 	p.lookAhead = lookAhead
+	p.lookBehind = token
 
 	return token
 }
 
 func (p *parser) binaryExpression(builder func() Node, operator tokenizer.Type) Node {
+	startsWithParen := p.lookAhead.Type == tokenizer.OpeningParenthesis
+	parenStart := p.lookAhead.Start
 	left := builder()
 
 	for p.lookAhead.Type == operator {
-		operator := p.consume(operator)
-		right := builder()
+		start := left.Start()
+		if startsWithParen {
+			start = parenStart
+		}
+		startsWithParen = false
 
-		left = NewBinaryExpression(left.Start(), right.End(), operator.Value, left, right)
+		operator := p.consume(operator)
+
+		right := builder()
+		end := right.End()
+		if p.lookBehind.Type == tokenizer.ClosingParenthesis {
+			end = p.lookBehind.End
+		}
+
+		left = NewBinaryExpression(start, end, operator.Value, left, right)
 	}
 
 	return left
