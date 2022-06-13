@@ -17,30 +17,6 @@ import (
 	"github.com/0xvesion/go-js-parser/tokenizer"
 )
 
-func sanatize(node map[string]interface{}, keys []string) interface{} {
-	for key, value := range node {
-		if subNode, is := value.(map[string]interface{}); is {
-			node[key] = sanatize(subNode, keys)
-			continue
-		}
-
-		if list, is := value.([]interface{}); is {
-			for i, subNode := range list {
-				list[i] = sanatize(subNode.(map[string]interface{}), keys)
-			}
-			continue
-		}
-
-		for _, remove := range keys {
-			if key == remove {
-				delete(node, key)
-			}
-		}
-	}
-
-	return node
-}
-
 func hash(s string) string {
 	hasher := sha1.New()
 	hasher.Write([]byte(s))
@@ -91,17 +67,17 @@ func acornRaw(exp string) []byte {
 	return out
 }
 
-func acorn(exp string, sanatizeKeys []string) interface{} {
+func acorn(exp string) interface{} {
 	out := cache(exp, acornRaw)
 
 	x := &map[string]interface{}{}
 
 	json.Unmarshal(out, x)
 
-	return sanatize(*x, sanatizeKeys)
+	return x
 }
 
-func goParser(src string, sanatizeKeys []string) interface{} {
+func goParser(src string) interface{} {
 	actualAst, err := parser.New(tokenizer.New(src)).Parse()
 	if err != nil {
 		log.Fatal(err)
@@ -110,12 +86,12 @@ func goParser(src string, sanatizeKeys []string) interface{} {
 	x := &map[string]interface{}{}
 	json.Unmarshal(actualAstJson, x)
 
-	return sanatize(*x, sanatizeKeys)
+	return x
 }
 
-func test(t *testing.T, src string, sanatizeKeys ...string) {
-	referenceAst := acorn(src, sanatizeKeys)
-	actualAst := goParser(src, sanatizeKeys)
+func test(t *testing.T, src string) {
+	referenceAst := acorn(src)
+	actualAst := goParser(src)
 
 	if !reflect.DeepEqual(referenceAst, actualAst) {
 		referenceJson, _ := json.MarshalIndent(referenceAst, "", "  ")
@@ -123,10 +99,6 @@ func test(t *testing.T, src string, sanatizeKeys ...string) {
 
 		t.Errorf("Invalid ast.\nwant: %s\ngot: %s\n", referenceJson, actualJson)
 	}
-}
-
-func sanatizeTest(t *testing.T, src string) {
-	test(t, src, "start", "end")
 }
 
 func TestNumberParity(t *testing.T) {
