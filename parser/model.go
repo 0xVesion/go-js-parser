@@ -135,8 +135,8 @@ func NewVariableDeclarator(start int, end int, id Node, init Node) Node {
 	return n
 }
 
-func NewIfStatement(test Node, consequent Node, alternate Node) Node {
-	n := NewNode(IfStatement, 0, 0)
+func NewIfStatement(start int, end int, test Node, consequent Node, alternate Node) Node {
+	n := NewNode(IfStatement, start, end)
 
 	n["test"] = test
 	n["consequent"] = consequent

@@ -195,9 +195,9 @@ func TestVariableDeclaration(t *testing.T) {
 }
 
 func TestIfStatement(t *testing.T) {
-	sanatizeTest(t, `if (a > b) result = 100; else result = 200;`)
-	sanatizeTest(t, `if (a > b) result = 100;`)
-	sanatizeTest(t, `if (a > b) if (c > d) result = 123; else result = 321; else result = 111;`)
+	test(t, `if (a > b) result = 100; else result = 200;`)
+	test(t, `if (a > b) result = 100;`)
+	test(t, `if (a > b) if (c > d) result = 123; else result = 321; else result = 111;`)
 }
 
 func TestRelationalExpression(t *testing.T) {
@@ -218,7 +218,7 @@ func TestNullParity(t *testing.T) {
 func TestEqualityParity(t *testing.T) {
 	test(t, `1==2;`)
 	test(t, `a+1!=2+2*3;`)
-	sanatizeTest(t, `if(1!=2) res = 200;`)
+	test(t, `if(1!=2) res = 200;`)
 }
 
 func TestLogicalExpressionParity(t *testing.T) {

@@ -59,21 +59,21 @@ func (p *parser) statement() Node {
 // 	| 'if' ParenthesizedExpression Statement 'else' Statement
 // 	;
 func (p *parser) ifStatement() Node {
-	p.consume(tokenizer.IfKeyword)
+	start := p.consume(tokenizer.IfKeyword).Start
 
 	test := p.parenthesizedExpression()
 
 	consequent := p.statement()
 
 	if p.lookAhead.Not(tokenizer.ElseKeyword) {
-		return NewIfStatement(test, consequent, nil)
+		return NewIfStatement(start, consequent.End(), test, consequent, nil)
 	}
 
 	p.consume(tokenizer.ElseKeyword)
 
 	alternate := p.statement()
 
-	return NewIfStatement(test, consequent, alternate)
+	return NewIfStatement(start, alternate.End(), test, consequent, alternate)
 }
 
 // VariableDeclaration
