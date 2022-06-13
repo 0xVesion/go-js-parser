@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"reflect"
 	"runtime/debug"
 	"strings"
 
@@ -10,7 +9,7 @@ import (
 )
 
 type Parser interface {
-	Parse() (interface{}, error)
+	Parse() (Node, error)
 }
 
 type parser struct {
@@ -30,7 +29,7 @@ func New(t tokenizer.Tokenizer) Parser {
 	}
 }
 
-func (p *parser) Parse() (n interface{}, err error) {
+func (p *parser) Parse() (n Node, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = p.formatError(r)
@@ -85,14 +84,14 @@ func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 	return token
 }
 
-func (p *parser) binaryExpression(builder func() interface{}, operator tokenizer.Type) interface{} {
+func (p *parser) binaryExpression(builder func() Node, operator tokenizer.Type) Node {
 	left := builder()
 
 	for p.lookAhead.Type == operator {
 		operator := p.consume(operator)
 		right := builder()
 
-		left = NewBinaryExpression(GetNode(left).Start, GetNode(right).End, operator.Value, left, right)
+		left = NewBinaryExpression(left.Start(), right.End(), operator.Value, left, right)
 	}
 
 	return left
@@ -110,7 +109,7 @@ func (p *parser) isLookaheadAssignmentOperator() bool {
 		p.lookAhead.Type == tokenizer.ComplexAssignmentOperator
 }
 
-func (p *parser) logicalExpression(builder func() interface{}, operator tokenizer.Type) interface{} {
+func (p *parser) logicalExpression(builder func() Node, operator tokenizer.Type) Node {
 	left := builder()
 
 	for p.lookAhead.Type == operator {
@@ -127,27 +126,19 @@ func (p *parser) consumeAny() tokenizer.Token {
 	return p.consume(p.lookAhead.Type)
 }
 
-func (p *parser) addDirectives(sl []interface{}) []interface{} {
+func (p *parser) addDirectives(sl []Node) []Node {
 	for k, v := range sl {
-		if exp, ok := v.(ExpressionStatementNode); ok {
-			if literal, ok := exp.Expression.(LiteralNode); ok {
-				if str, ok := literal.Value.(string); ok {
-					exp.Directive = str
-					sl[k] = exp
+		if v.Type() == ExpressionStatement {
+			exp := ExpressionStatementNode(v).Expression()
+			if exp.Type() == Literal {
+				value := LiteralNode(exp).Value()
+				if str, ok := value.(string); ok {
+					v["directive"] = str
+					sl[k] = v
 				}
 			}
 		}
 	}
 
 	return sl
-}
-
-func GetNode(n interface{}) Node {
-	node := reflect.ValueOf(n).Field(0)
-
-	return Node{
-		Type:  Type(node.Field(0).String()),
-		Start: int(node.Field(1).Int()),
-		End:   int(node.Field(2).Int()),
-	}
 }

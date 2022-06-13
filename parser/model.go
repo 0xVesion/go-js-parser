@@ -18,139 +18,149 @@ const (
 	UnaryExpression           = "UnaryExpression"
 )
 
-type Node struct {
-	Type  `json:"type"`
-	Start int `json:"start"`
-	End   int `json:"end"`
+type Node map[string]interface{}
+
+func (n Node) Type() Type {
+	return n["type"].(Type)
 }
 
-type LiteralNode struct {
-	Node
-	Value interface{} `json:"value"`
-	Raw   interface{} `json:"raw"`
+func (n Node) Start() int {
+	return n["start"].(int)
 }
 
-func NewLiteral(start int, end int, val interface{}, raw string) LiteralNode {
-	return LiteralNode{Node{Literal, start, end}, val, raw}
+func (n Node) End() int {
+	return n["end"].(int)
 }
 
-type BlockStatementNode struct {
-	Node
-	Body []interface{} `json:"body"`
+func NewNode(t Type, start int, end int) Node {
+	return Node{
+		"type":  t,
+		"start": start,
+		"end":   end,
+	}
 }
 
-func NewBlockStatement(start int, end int, sl ...interface{}) BlockStatementNode {
-	return BlockStatementNode{Node{BlockStatement, start, end}, sl}
+type LiteralNode Node
+
+func (n LiteralNode) Value() interface{} {
+	return n["value"]
 }
 
-type ProgramNode struct {
-	Node
-	SourceType string        `json:"sourceType"`
-	Body       []interface{} `json:"body"`
+func NewLiteral(start int, end int, value interface{}, raw string) Node {
+	n := NewNode(Literal, start, end)
+
+	n["value"] = value
+	n["raw"] = raw
+
+	return n
 }
 
-func NewProgram(start int, end int, sl ...interface{}) ProgramNode {
-	return ProgramNode{Node{Program, start, end}, "script", sl}
+func NewBlockStatement(start int, end int, body ...Node) Node {
+	n := NewNode(BlockStatement, start, end)
+
+	n["body"] = body
+
+	return n
 }
 
-type EmptyStatementNode struct {
-	Node
+func NewProgram(start int, end int, body ...Node) Node {
+	n := NewNode(Program, start, end)
+
+	n["body"] = body
+	n["sourceType"] = "script"
+
+	return n
+}
+func NewEmptyStatement(start int, end int) Node {
+	return NewNode(EmptyStatement, start, end)
 }
 
-func NewEmptyStatement(start int, end int) EmptyStatementNode {
-	return EmptyStatementNode{Node{EmptyStatement, start, end}}
+type ExpressionStatementNode Node
+
+func (n ExpressionStatementNode) Expression() Node {
+	return n["expression"].(Node)
 }
 
-type ExpressionStatementNode struct {
-	Node
-	Expression interface{} `json:"expression"`
-	Directive  string      `json:"directive,omitempty"`
+func NewExpressionStatement(start int, end int, expression Node) Node {
+	n := NewNode(ExpressionStatement, start, end)
+
+	n["expression"] = expression
+
+	return n
 }
 
-func NewExpressionStatement(start int, end int, exp interface{}) ExpressionStatementNode {
-	return ExpressionStatementNode{Node{ExpressionStatement, start, end}, exp, ""}
+func NewBinaryExpression(start int, end int, operator string, left Node, right Node) Node {
+	n := NewNode(BinaryExpression, start, end)
+
+	n["left"] = left
+	n["operator"] = operator
+	n["right"] = right
+
+	return n
 }
 
-type BinaryExpressionNode struct {
-	Node
-	Operator string      `json:"operator"`
-	Left     interface{} `json:"left"`
-	Right    interface{} `json:"right"`
+func NewIdentifier(start int, end int, name string) Node {
+	n := NewNode(Identifier, start, end)
+
+	n["name"] = name
+
+	return n
 }
 
-func NewBinaryExpression(start int, end int, operator string, left interface{}, right interface{}) BinaryExpressionNode {
-	return BinaryExpressionNode{Node{BinaryExpression, start, end}, operator, left, right}
+func NewAssignmentExpression(start int, end int, operator string, left Node, right Node) Node {
+	n := NewNode(AssignmentExpression, start, end)
+
+	n["left"] = left
+	n["operator"] = operator
+	n["right"] = right
+
+	return n
 }
 
-type IdentifierNode struct {
-	Node
-	Name string `json:"name"`
+func NewVariableDeclaration(kind string, declarations []Node) Node {
+	n := NewNode(VariableDeclaration, 0, 0)
+
+	n["kind"] = kind
+	n["declarations"] = declarations
+
+	return n
 }
 
-func NewIdentifier(start int, end int, name string) IdentifierNode {
-	return IdentifierNode{Node{Identifier, start, end}, name}
+func NewVariableDeclarator(id Node, init Node) Node {
+	n := NewNode(VariableDeclarator, 0, 0)
+
+	n["id"] = id
+	n["init"] = init
+
+	return n
 }
 
-type AssignmentExpressionNode struct {
-	Node
-	Operator string      `json:"operator"`
-	Left     interface{} `json:"left"`
-	Right    interface{} `json:"right"`
+func NewIfStatement(test Node, consequent Node, alternate Node) Node {
+	n := NewNode(IfStatement, 0, 0)
+
+	n["test"] = test
+	n["consequent"] = consequent
+	n["alternate"] = alternate
+
+	return n
 }
 
-func NewAssignmentExpression(start int, end int, operator string, left interface{}, right interface{}) AssignmentExpressionNode {
-	return AssignmentExpressionNode{Node{AssignmentExpression, start, end}, operator, left, right}
+func NewLogicalExpression(operator string, left Node, right Node) Node {
+	n := NewNode(LogicalExpression, 0, 0)
+
+	n["left"] = left
+	n["operator"] = operator
+	n["right"] = right
+
+	return n
 }
 
-type VariableDeclarationNode struct {
-	Node
-	Kind         string        `json:"kind"`
-	Declarations []interface{} `json:"declarations"`
-}
+func NewUnaryExpression(operator string, argument Node) Node {
+	n := NewNode(UnaryExpression, 0, 0)
 
-func NewVariableDeclaration(kind string, declarations []interface{}) VariableDeclarationNode {
-	return VariableDeclarationNode{Node{VariableDeclaration, 0, 0}, kind, declarations}
-}
+	n["operator"] = operator
+	n["argument"] = argument
+	n["prefix"] = true
 
-type VariableDeclaratorNode struct {
-	Node
-	Id   interface{} `json:"id"`
-	Init interface{} `json:"init"`
-}
-
-func NewVariableDeclarator(id interface{}, init interface{}) VariableDeclaratorNode {
-	return VariableDeclaratorNode{Node{VariableDeclarator, 0, 0}, id, init}
-}
-
-type IfStatementNode struct {
-	Node
-	Test       interface{} `json:"test"`
-	Consequent interface{} `json:"consequent"`
-	Alternate  interface{} `json:"alternate"`
-}
-
-func NewIfStatement(test interface{}, consequent interface{}, alternate interface{}) IfStatementNode {
-	return IfStatementNode{Node{IfStatement, 0, 0}, test, consequent, alternate}
-}
-
-type LogicalExpressionNode struct {
-	Node
-	Operator string      `json:"operator"`
-	Left     interface{} `json:"left"`
-	Right    interface{} `json:"right"`
-}
-
-func NewLogicalExpression(operator string, left interface{}, right interface{}) LogicalExpressionNode {
-	return LogicalExpressionNode{Node{LogicalExpression, 0, 0}, operator, left, right}
-}
-
-type UnaryExpressionNode struct {
-	Node
-	Operator string      `json:"operator"`
-	Prefix   bool        `json:"prefix"`
-	Argument interface{} `json:"argument"`
-}
-
-func NewUnaryExpression(operator string, argument interface{}) UnaryExpressionNode {
-	return UnaryExpressionNode{Node{UnaryExpression, 0, 0}, operator, true, argument}
+	return n
 }

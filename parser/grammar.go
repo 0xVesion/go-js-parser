@@ -11,7 +11,7 @@ import (
 // Program
 // 	: StatementList
 // 	;
-func (p *parser) program() interface{} {
+func (p *parser) program() Node {
 	sl := p.statementList(tokenizer.None)
 	sl = p.addDirectives(sl)
 
@@ -22,8 +22,8 @@ func (p *parser) program() interface{} {
 // 	: Statement
 // 	| StatementList Statement
 // 	;
-func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
-	sl := []interface{}{}
+func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
+	sl := []Node{}
 
 	for p.lookAhead.Not(endLookahead) {
 		sl = append(sl, p.statement())
@@ -39,7 +39,7 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []interface{} {
 // 	| VariableDeclaration
 // 	| IfStatement
 // 	;
-func (p *parser) statement() interface{} {
+func (p *parser) statement() Node {
 	switch p.lookAhead.Type {
 	case tokenizer.OpeningCurlyBrace:
 		return p.blockStatement()
@@ -58,7 +58,7 @@ func (p *parser) statement() interface{} {
 // 	: 'if' ParenthesizedExpression Statement
 // 	| 'if' ParenthesizedExpression Statement 'else' Statement
 // 	;
-func (p *parser) ifStatement() interface{} {
+func (p *parser) ifStatement() Node {
 	p.consume(tokenizer.IfKeyword)
 
 	test := p.parenthesizedExpression()
@@ -79,7 +79,7 @@ func (p *parser) ifStatement() interface{} {
 // VariableDeclaration
 // 	: VARIABLE_DECLARATION_KEYWORD VariableDeclaratorList ';'
 // 	;
-func (p *parser) variableDeclaration() interface{} {
+func (p *parser) variableDeclaration() Node {
 	kind := p.consume(tokenizer.VariableDeclarationKeyword)
 	declarations := p.variableDeclaratorList()
 	p.consume(tokenizer.Semicolon)
@@ -91,8 +91,8 @@ func (p *parser) variableDeclaration() interface{} {
 // 	: VariableDeclarator
 //	| VariableDeclaratorList ',' VariableDeclarator
 // 	;
-func (p *parser) variableDeclaratorList() []interface{} {
-	declarations := []interface{}{p.variableDeclarator()}
+func (p *parser) variableDeclaratorList() []Node {
+	declarations := []Node{p.variableDeclarator()}
 
 	for p.lookAhead.Is(tokenizer.Comma) {
 		p.consume(tokenizer.Comma)
@@ -105,10 +105,10 @@ func (p *parser) variableDeclaratorList() []interface{} {
 // VariableDeclarator
 // 	: Identifier OptVariableInitializer
 // 	;
-func (p *parser) variableDeclarator() interface{} {
+func (p *parser) variableDeclarator() Node {
 	id := p.identifier()
 
-	var init interface{}
+	var init Node
 	if p.lookAhead.Not(tokenizer.Semicolon, tokenizer.Comma) {
 		p.consume(tokenizer.SimpleAssignmentOperator)
 		init = p.assignmentExpression()
@@ -120,7 +120,7 @@ func (p *parser) variableDeclarator() interface{} {
 // EmptyStatement
 // 	: ';'
 // 	;
-func (p *parser) emptyStatement() interface{} {
+func (p *parser) emptyStatement() Node {
 	t := p.consume(tokenizer.Semicolon)
 
 	return NewEmptyStatement(t.Start, t.End)
@@ -129,7 +129,7 @@ func (p *parser) emptyStatement() interface{} {
 // BlockStatement
 // 	: '{' StatementList '}'
 // 	;
-func (p *parser) blockStatement() interface{} {
+func (p *parser) blockStatement() Node {
 	start := p.consume(tokenizer.OpeningCurlyBrace).Start
 
 	sl := p.statementList(tokenizer.ClosingCurlyBrace)
@@ -142,7 +142,7 @@ func (p *parser) blockStatement() interface{} {
 // ExpressionStatment
 // 	: Expression ';'
 // 	;
-func (p *parser) expressionStatment() interface{} {
+func (p *parser) expressionStatment() Node {
 	start := p.lookAhead.Start
 	exp := p.expression()
 
@@ -154,7 +154,7 @@ func (p *parser) expressionStatment() interface{} {
 // Expression
 // 	: AssignmentExpression
 // 	;
-func (p *parser) expression() interface{} {
+func (p *parser) expression() Node {
 	return p.assignmentExpression()
 }
 
@@ -162,28 +162,28 @@ func (p *parser) expression() interface{} {
 // 	: LogicalOrExpression
 // 	| LeftHandSideExpression ASSIGNMENT_OPERATOR AssignmentExpression
 // 	;
-func (p *parser) assignmentExpression() interface{} {
+func (p *parser) assignmentExpression() Node {
 	left := p.logicalOrExpression()
 
 	if !p.isLookaheadAssignmentOperator() {
 		return left
 	}
 
-	if _, isIdentifier := left.(IdentifierNode); !isIdentifier {
+	if left.Type() != Identifier {
 		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
 	op := p.consumeAny().Value
 	right := p.assignmentExpression()
 
-	return NewAssignmentExpression(GetNode(left).Start, GetNode(right).End, op, left, right)
+	return NewAssignmentExpression(left.Start(), right.End(), op, left, right)
 }
 
 // LogicalOrExpression
 // 	: LogicalAndExpression
 // 	| LogicalOrExpression '||' LogicalAndExpression
 // 	;
-func (p *parser) logicalOrExpression() interface{} {
+func (p *parser) logicalOrExpression() Node {
 	return p.logicalExpression(
 		p.logicalAndExpression,
 		tokenizer.LogicalOrOperator,
@@ -194,7 +194,7 @@ func (p *parser) logicalOrExpression() interface{} {
 // 	: EqualityExpression
 // 	| LogicalAndExpression '&&' EqualityExpression
 // 	;
-func (p *parser) logicalAndExpression() interface{} {
+func (p *parser) logicalAndExpression() Node {
 	return p.logicalExpression(
 		p.equalityExpression,
 		tokenizer.LogicalAndOperator,
@@ -205,7 +205,7 @@ func (p *parser) logicalAndExpression() interface{} {
 // 	: RelationalExpression
 // 	| EqualityExpression EQUALITY_OPERATOR RelationalExpression
 // 	;
-func (p *parser) equalityExpression() interface{} {
+func (p *parser) equalityExpression() Node {
 	return p.binaryExpression(
 		p.relationalExpression,
 		tokenizer.EqualityOperator,
@@ -216,7 +216,7 @@ func (p *parser) equalityExpression() interface{} {
 // 	: AdditiveExpression
 // 	| RelationalExpression RELATIONAL_OPERATOR AdditiveExpression
 // 	;
-func (p *parser) relationalExpression() interface{} {
+func (p *parser) relationalExpression() Node {
 	return p.binaryExpression(
 		p.additiveExpression,
 		tokenizer.RelationalOperator,
@@ -227,7 +227,7 @@ func (p *parser) relationalExpression() interface{} {
 // 	: MultiplicativeExpression
 // 	| AdditiveExpression ADDITIVE_OPERATOR MultiplicativeExpression
 // 	;
-func (p *parser) additiveExpression() interface{} {
+func (p *parser) additiveExpression() Node {
 	return p.binaryExpression(
 		p.multiplicativeExpression,
 		tokenizer.AdditiveOperator,
@@ -238,7 +238,7 @@ func (p *parser) additiveExpression() interface{} {
 // 	: UnaryExpression
 // 	| MultiplicativeExpression MULTIPLICATIVE_OPERATOR UnaryExpression
 // 	;
-func (p *parser) multiplicativeExpression() interface{} {
+func (p *parser) multiplicativeExpression() Node {
 	return p.binaryExpression(
 		p.unaryExpression,
 		tokenizer.MultiplicativeOperator,
@@ -250,7 +250,7 @@ func (p *parser) multiplicativeExpression() interface{} {
 // 	| ADDITIVE_OPERATOR UnaryExpression
 //	| LOGICAL_NOT UnaryExpression
 // 	;
-func (p *parser) unaryExpression() interface{} {
+func (p *parser) unaryExpression() Node {
 	if p.lookAhead.Not(tokenizer.LogicalNotOperator, tokenizer.AdditiveOperator) {
 		return p.leftHandSideExpression()
 	}
@@ -264,7 +264,7 @@ func (p *parser) unaryExpression() interface{} {
 // LeftHandSideExpression
 // 	: PrimaryExpression
 //	;
-func (p *parser) leftHandSideExpression() interface{} {
+func (p *parser) leftHandSideExpression() Node {
 	return p.primaryExpression()
 }
 
@@ -273,7 +273,7 @@ func (p *parser) leftHandSideExpression() interface{} {
 //  | ParenthesizedExpression
 //  | Identifier
 // 	;
-func (p *parser) primaryExpression() interface{} {
+func (p *parser) primaryExpression() Node {
 	if p.isLookaheadLiteral() {
 		return p.literal()
 	}
@@ -291,7 +291,7 @@ func (p *parser) primaryExpression() interface{} {
 // Identifier
 // 	: IDENTIFIER
 // 	;
-func (p *parser) identifier() interface{} {
+func (p *parser) identifier() Node {
 	id := p.consume(tokenizer.Identifier)
 
 	return NewIdentifier(id.Start, id.End, id.Value)
@@ -300,7 +300,7 @@ func (p *parser) identifier() interface{} {
 // ParenthesizedExpression
 // 	: '(' Expression ')'
 // 	;
-func (p *parser) parenthesizedExpression() interface{} {
+func (p *parser) parenthesizedExpression() Node {
 	p.consume(tokenizer.OpeningParenthesis)
 
 	ex := p.expression()
@@ -316,7 +316,7 @@ func (p *parser) parenthesizedExpression() interface{} {
 //	| BooleanLiteral
 //  | NullLiteral
 // 	;
-func (p *parser) literal() interface{} {
+func (p *parser) literal() Node {
 	switch p.lookAhead.Type {
 	case tokenizer.Number:
 		return p.numericLiteral()
@@ -335,7 +335,7 @@ func (p *parser) literal() interface{} {
 // 	: 'true'
 // 	| 'false'
 // 	;
-func (p *parser) booleanLiteral() interface{} {
+func (p *parser) booleanLiteral() Node {
 	token := p.consume(tokenizer.BooleanLiteral)
 
 	return NewLiteral(token.Start, token.End, token.Value == "true", token.Value)
@@ -344,7 +344,7 @@ func (p *parser) booleanLiteral() interface{} {
 // NullLiteral
 // 	: 'null'
 // 	;
-func (p *parser) nullLiteral() interface{} {
+func (p *parser) nullLiteral() Node {
 	token := p.consume(tokenizer.NullLiteral)
 
 	return NewLiteral(token.Start, token.End, nil, token.Value)
@@ -353,7 +353,7 @@ func (p *parser) nullLiteral() interface{} {
 // NumericLiteral
 // 	: NUMBER
 // 	;
-func (p *parser) numericLiteral() interface{} {
+func (p *parser) numericLiteral() Node {
 	token := p.consume(tokenizer.Number)
 
 	value, err := strconv.Atoi(token.Value)
@@ -367,7 +367,7 @@ func (p *parser) numericLiteral() interface{} {
 // StringLiteral
 // 	: STRING
 // 	;
-func (p *parser) stringLiteral() interface{} {
+func (p *parser) stringLiteral() Node {
 	token := p.consume(tokenizer.String)
 
 	return NewLiteral(token.Start, token.End, token.Value[1:len(token.Value)-1], token.Value)
