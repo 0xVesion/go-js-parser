@@ -186,9 +186,10 @@ func (p *parser) assignmentExpression() Node {
 // 	| LogicalOrExpression '||' LogicalAndExpression
 // 	;
 func (p *parser) logicalOrExpression() Node {
-	return p.logicalExpression(
+	return p.binaryExpression(
 		p.logicalAndExpression,
 		tokenizer.LogicalOrOperator,
+		NewLogicalExpression,
 	)
 }
 
@@ -197,9 +198,10 @@ func (p *parser) logicalOrExpression() Node {
 // 	| LogicalAndExpression '&&' EqualityExpression
 // 	;
 func (p *parser) logicalAndExpression() Node {
-	return p.logicalExpression(
+	return p.binaryExpression(
 		p.equalityExpression,
 		tokenizer.LogicalAndOperator,
+		NewLogicalExpression,
 	)
 }
 
@@ -211,6 +213,7 @@ func (p *parser) equalityExpression() Node {
 	return p.binaryExpression(
 		p.relationalExpression,
 		tokenizer.EqualityOperator,
+		NewBinaryExpression,
 	)
 }
 
@@ -222,6 +225,7 @@ func (p *parser) relationalExpression() Node {
 	return p.binaryExpression(
 		p.additiveExpression,
 		tokenizer.RelationalOperator,
+		NewBinaryExpression,
 	)
 }
 
@@ -233,6 +237,7 @@ func (p *parser) additiveExpression() Node {
 	return p.binaryExpression(
 		p.multiplicativeExpression,
 		tokenizer.AdditiveOperator,
+		NewBinaryExpression,
 	)
 }
 
@@ -244,6 +249,7 @@ func (p *parser) multiplicativeExpression() Node {
 	return p.binaryExpression(
 		p.unaryExpression,
 		tokenizer.MultiplicativeOperator,
+		NewBinaryExpression,
 	)
 }
 

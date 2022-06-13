@@ -86,7 +86,11 @@ func (p *parser) consume(t tokenizer.Type) tokenizer.Token {
 	return token
 }
 
-func (p *parser) binaryExpression(builder func() Node, operator tokenizer.Type) Node {
+func (p *parser) binaryExpression(
+	builder func() Node,
+	operator tokenizer.Type,
+	newer func(int, int, string, Node, Node) Node,
+) Node {
 	startsWithParen := p.lookAhead.Type == tokenizer.OpeningParenthesis
 	parenStart := p.lookAhead.Start
 	left := builder()
@@ -106,7 +110,7 @@ func (p *parser) binaryExpression(builder func() Node, operator tokenizer.Type) 
 			end = p.lookBehind.End
 		}
 
-		left = NewBinaryExpression(start, end, operator.Value, left, right)
+		left = newer(start, end, operator.Value, left, right)
 	}
 
 	return left
@@ -122,19 +126,6 @@ func (p *parser) isLookaheadLiteral() bool {
 func (p *parser) isLookaheadAssignmentOperator() bool {
 	return p.lookAhead.Type == tokenizer.SimpleAssignmentOperator ||
 		p.lookAhead.Type == tokenizer.ComplexAssignmentOperator
-}
-
-func (p *parser) logicalExpression(builder func() Node, operator tokenizer.Type) Node {
-	left := builder()
-
-	for p.lookAhead.Type == operator {
-		operator := p.consume(operator)
-		right := builder()
-
-		left = NewLogicalExpression(operator.Value, left, right)
-	}
-
-	return left
 }
 
 func (p *parser) consumeAny() tokenizer.Token {

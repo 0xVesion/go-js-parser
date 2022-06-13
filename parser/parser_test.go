@@ -222,9 +222,14 @@ func TestEqualityParity(t *testing.T) {
 }
 
 func TestLogicalExpressionParity(t *testing.T) {
-	sanatizeTest(t, `a = 1||2==2&&3;`)
-	sanatizeTest(t, `a||1!=2+2||3;`)
-	sanatizeTest(t, `a||1&&2+2||3;`)
+	test(t, `a||b;`)
+	test(t, `a&&b;`)
+	test(t, `(a&&b)||c;`)
+	test(t, `a||(b&&c);`)
+	test(t, `((a&&b)||(c&&d))||e;`)
+	test(t, `a = 1||2==2&&3;`)
+	test(t, `a||1!=2+2||3;`)
+	test(t, `a||1&&2+2||3;`)
 }
 
 func TestUnarityExpressionParity(t *testing.T) {

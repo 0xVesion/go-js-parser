@@ -145,8 +145,8 @@ func NewIfStatement(start int, end int, test Node, consequent Node, alternate No
 	return n
 }
 
-func NewLogicalExpression(operator string, left Node, right Node) Node {
-	n := NewNode(LogicalExpression, 0, 0)
+func NewLogicalExpression(start int, end int, operator string, left Node, right Node) Node {
+	n := NewNode(LogicalExpression, start, end)
 
 	n["left"] = left
 	n["operator"] = operator
