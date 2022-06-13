@@ -125,3 +125,18 @@ func (p *parser) logicalExpression(builder func() interface{}, operator tokenize
 func (p *parser) consumeAny() tokenizer.Token {
 	return p.consume(p.lookAhead.Type)
 }
+
+func (p *parser) addDirectives(sl []interface{}) []interface{} {
+	for k, v := range sl {
+		if exp, ok := v.(ExpressionStatementNode); ok {
+			if literal, ok := exp.Expression.(LiteralNode); ok {
+				if str, ok := literal.Value.(string); ok {
+					exp.Directive = str
+					sl[k] = exp
+				}
+			}
+		}
+	}
+
+	return sl
+}

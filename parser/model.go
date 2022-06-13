@@ -63,10 +63,11 @@ func NewEmptyStatement(start int, end int) EmptyStatementNode {
 type ExpressionStatementNode struct {
 	Node
 	Expression interface{} `json:"expression"`
+	Directive  string      `json:"directive,omitempty"`
 }
 
 func NewExpressionStatement(start int, end int, exp interface{}) ExpressionStatementNode {
-	return ExpressionStatementNode{Node{ExpressionStatement, start, end}, exp}
+	return ExpressionStatementNode{Node{ExpressionStatement, start, end}, exp, ""}
 }
 
 type BinaryExpressionNode struct {

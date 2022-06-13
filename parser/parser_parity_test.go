@@ -91,17 +91,17 @@ func acornRaw(exp string) []byte {
 	return out
 }
 
-func acorn(exp string) interface{} {
+func acorn(exp string, sanatizeKeys []string) interface{} {
 	out := cache(exp, acornRaw)
 
 	x := &map[string]interface{}{}
 
 	json.Unmarshal(out, x)
 
-	return sanatize(*x, []string{"start", "end", "sourceType", "raw", "directive"})
+	return sanatize(*x, sanatizeKeys)
 }
 
-func goParser(src string) interface{} {
+func goParser(src string, sanatizeKeys []string) interface{} {
 	actualAst, err := parser.New(tokenizer.New(src)).Parse()
 	if err != nil {
 		log.Fatal(err)
@@ -110,12 +110,12 @@ func goParser(src string) interface{} {
 	x := &map[string]interface{}{}
 	json.Unmarshal(actualAstJson, x)
 
-	return sanatize(*x, []string{"start", "end", "sourceType", "raw", "directive"})
+	return sanatize(*x, sanatizeKeys)
 }
 
-func test(t *testing.T, src string) {
-	referenceAst := acorn(src)
-	actualAst := goParser(src)
+func test(t *testing.T, src string, sanatizeKeys ...string) {
+	referenceAst := acorn(src, sanatizeKeys)
+	actualAst := goParser(src, sanatizeKeys)
 
 	if !reflect.DeepEqual(referenceAst, actualAst) {
 		referenceJson, _ := json.MarshalIndent(referenceAst, "", "  ")
@@ -125,29 +125,33 @@ func test(t *testing.T, src string) {
 	}
 }
 
+func sanatizeTest(t *testing.T, src string) {
+	test(t, src, "start", "end", "raw")
+}
+
 func TestNumberParity(t *testing.T) {
-	test(t, `123;`)
+	sanatizeTest(t, `123;`)
 }
 
 func TestStringsParity(t *testing.T) {
-	test(t, `"Hello World!";`)
+	sanatizeTest(t, `"Hello World!";`)
 }
 
 func TestStatementsParity(t *testing.T) {
-	test(t, `1;2;3;`)
+	sanatizeTest(t, `1;2;3;`)
 }
 
 func TestBlockStatementParity(t *testing.T) {
-	test(t, `{}`)
+	sanatizeTest(t, `{}`)
 
-	test(t, `{
+	sanatizeTest(t, `{
 			"Hello World!";
 			{
 				123;
 			}
 		}`)
 
-	test(t,
+	sanatizeTest(t,
 		`{
 			123;
 			"Hello World!";
@@ -155,80 +159,80 @@ func TestBlockStatementParity(t *testing.T) {
 }
 
 func TestEmptyStatementParity(t *testing.T) {
-	test(t, `;`)
+	sanatizeTest(t, `;`)
 }
 
 func TestAdditiveExpressionParity(t *testing.T) {
-	test(t, `1+1;`)
+	sanatizeTest(t, `1+1;`)
 
-	test(t, `1-1;`)
+	sanatizeTest(t, `1-1;`)
 
-	test(t, `1+1-2;`)
+	sanatizeTest(t, `1+1-2;`)
 }
 
 func TestMultiplicativeExpressionParity(t *testing.T) {
-	test(t, `1*1;`)
+	sanatizeTest(t, `1*1;`)
 
-	test(t, `1/1;`)
+	sanatizeTest(t, `1/1;`)
 
-	test(t, `2+2*2;`)
+	sanatizeTest(t, `2+2*2;`)
 
-	test(t, `2*2*2;`)
+	sanatizeTest(t, `2*2*2;`)
 }
 
 func TestMultiplicativeExpressionPrecedenceParity(t *testing.T) {
-	test(t, `(2+2)*2;`)
+	sanatizeTest(t, `(2+2)*2;`)
 }
 
 func TestAssignments(t *testing.T) {
-	test(t, `a = 1;`)
-	test(t, `a = y = 1;`)
-	test(t, `a = 1 + 2;`)
+	sanatizeTest(t, `a = 1;`)
+	sanatizeTest(t, `a = y = 1;`)
+	sanatizeTest(t, `a = 1 + 2;`)
 }
 
 func TestVariableDeclaration(t *testing.T) {
-	test(t, `let a;`)
-	test(t, `let a = 1;`)
-	test(t, `let a, b;`)
-	test(t, `let a, b = 1;`)
+	sanatizeTest(t, `let a;`)
+	sanatizeTest(t, `let a = 1;`)
+	sanatizeTest(t, `let a, b;`)
+	sanatizeTest(t, `let a, b = 1;`)
 }
 
 func TestIfStatement(t *testing.T) {
-	test(t, `if (a > b) result = 100; else result = 200;`)
-	test(t, `if (a > b) result = 100;`)
-	test(t, `if (a > b) if (c > d) result = 123; else result = 321; else result = 111;`)
+	sanatizeTest(t, `if (a > b) result = 100; else result = 200;`)
+	sanatizeTest(t, `if (a > b) result = 100;`)
+	sanatizeTest(t, `if (a > b) if (c > d) result = 123; else result = 321; else result = 111;`)
 }
 
 func TestRelationalExpression(t *testing.T) {
-	test(t, `1>2;`)
-	test(t, `1+1<=2;`)
-	test(t, `a>a>a;`)
+	sanatizeTest(t, `1>2;`)
+	sanatizeTest(t, `1+1<=2;`)
+	sanatizeTest(t, `a>a>a;`)
 }
 
 func TestBooleanParity(t *testing.T) {
-	test(t, `true;`)
-	test(t, `false;`)
+	sanatizeTest(t, `true;`)
+	sanatizeTest(t, `false;`)
 }
 
 func TestNullParity(t *testing.T) {
-	test(t, `null;`)
+	sanatizeTest(t, `null;`)
 }
 
 func TestEqualityParity(t *testing.T) {
-	test(t, `1==2;`)
-	test(t, `a+1!=2+2*3;`)
-	test(t, `if(1!=2) res = 200;`)
+	sanatizeTest(t, `1==2;`)
+	sanatizeTest(t, `a+1!=2+2*3;`)
+	sanatizeTest(t, `if(1!=2) res = 200;`)
 }
 
 func TestLogicalExpressionParity(t *testing.T) {
-	test(t, `a = 1||2==2&&3;`)
-	test(t, `a||1!=2+2||3;`)
-	test(t, `a||1&&2+2||3;`)
+	sanatizeTest(t, `a = 1||2==2&&3;`)
+	sanatizeTest(t, `a||1!=2+2||3;`)
+	sanatizeTest(t, `a||1&&2+2||3;`)
 }
 
 func TestUnarityExpressionParity(t *testing.T) {
-	test(t, `-1;`)
-	test(t, `+1;`)
-	test(t, `!true;`)
-	test(t, `!!true;`)
+	sanatizeTest(t, `-1;`)
+	sanatizeTest(t, `+1;`)
+	sanatizeTest(t, `!true;`)
+	sanatizeTest(t, `!!true;`)
 }

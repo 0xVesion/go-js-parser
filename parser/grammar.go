@@ -12,7 +12,10 @@ import (
 // 	: StatementList
 // 	;
 func (p *parser) program() interface{} {
-	return NewProgram(0, len(p.t.Src()), p.statementList(tokenizer.None)...)
+	sl := p.statementList(tokenizer.None)
+	sl = p.addDirectives(sl)
+
+	return NewProgram(0, len(p.t.Src()), sl...)
 }
 
 // StatementList
