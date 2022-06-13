@@ -155,8 +155,8 @@ func NewLogicalExpression(operator string, left Node, right Node) Node {
 	return n
 }
 
-func NewUnaryExpression(operator string, argument Node) Node {
-	n := NewNode(UnaryExpression, 0, 0)
+func NewUnaryExpression(start int, end int, operator string, argument Node) Node {
+	n := NewNode(UnaryExpression, start, end)
 
 	n["operator"] = operator
 	n["argument"] = argument

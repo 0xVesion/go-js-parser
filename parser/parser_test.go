@@ -228,8 +228,8 @@ func TestLogicalExpressionParity(t *testing.T) {
 }
 
 func TestUnarityExpressionParity(t *testing.T) {
-	sanatizeTest(t, `-1;`)
-	sanatizeTest(t, `+1;`)
-	sanatizeTest(t, `!true;`)
-	sanatizeTest(t, `!!true;`)
+	test(t, `-1;`)
+	test(t, `+1;`)
+	test(t, `!true;`)
+	test(t, `!!true;`)
 }

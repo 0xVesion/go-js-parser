@@ -257,9 +257,13 @@ func (p *parser) unaryExpression() Node {
 		return p.leftHandSideExpression()
 	}
 
+	operator := p.consumeAny()
+	expr := p.unaryExpression()
 	return NewUnaryExpression(
-		p.consumeAny().Value,
-		p.unaryExpression(),
+		operator.Start,
+		expr.End(),
+		operator.Value,
+		expr,
 	)
 }
 
