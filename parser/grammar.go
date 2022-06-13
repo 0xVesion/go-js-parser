@@ -176,7 +176,7 @@ func (p *parser) assignmentExpression() interface{} {
 	op := p.consumeAny().Value
 	right := p.assignmentExpression()
 
-	return NewAssignmentExpression(op, left, right)
+	return NewAssignmentExpression(GetNode(left).Start, GetNode(right).End, op, left, right)
 }
 
 // LogicalOrExpression

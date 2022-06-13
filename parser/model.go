@@ -82,17 +82,6 @@ func NewBinaryExpression(start int, end int, operator string, left interface{}, 
 	return BinaryExpressionNode{Node{BinaryExpression, start, end}, operator, left, right}
 }
 
-type AssignmentExpressionNode struct {
-	Node
-	Operator string      `json:"operator"`
-	Left     interface{} `json:"left"`
-	Right    interface{} `json:"right"`
-}
-
-func NewAssignmentExpression(operator string, left interface{}, right interface{}) AssignmentExpressionNode {
-	return AssignmentExpressionNode{Node{AssignmentExpression, 0, 0}, operator, left, right}
-}
-
 type IdentifierNode struct {
 	Node
 	Name string `json:"name"`
@@ -100,6 +89,17 @@ type IdentifierNode struct {
 
 func NewIdentifier(start int, end int, name string) IdentifierNode {
 	return IdentifierNode{Node{Identifier, start, end}, name}
+}
+
+type AssignmentExpressionNode struct {
+	Node
+	Operator string      `json:"operator"`
+	Left     interface{} `json:"left"`
+	Right    interface{} `json:"right"`
+}
+
+func NewAssignmentExpression(start int, end int, operator string, left interface{}, right interface{}) AssignmentExpressionNode {
+	return AssignmentExpressionNode{Node{AssignmentExpression, start, end}, operator, left, right}
 }
 
 type VariableDeclarationNode struct {
