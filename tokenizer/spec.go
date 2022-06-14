@@ -27,6 +27,9 @@ const (
 	LogicalOrOperator               = "LogicalOrOperator"
 	LogicalAndOperator              = "LogicalAndOperator"
 	LogicalNotOperator              = "LogicalNotOperator"
+	WhileKeyword                    = "WhileKeyword"
+	DoKeyword                       = "DoKeyword"
+	ForKeyword                      = "ForKeyword"
 )
 
 type specEntry struct {
@@ -56,6 +59,9 @@ var spec = []specEntry{
 	{VariableDeclarationKeyword, []string{`\b((let)|(const))\b`}},
 	{IfKeyword, []string{`\bif\b`}},
 	{ElseKeyword, []string{`\belse\b`}},
+	{WhileKeyword, []string{`\bwhile\b`}},
+	{DoKeyword, []string{`\bdo\b`}},
+	{ForKeyword, []string{`\bfor\b`}},
 	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},

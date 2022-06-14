@@ -16,6 +16,8 @@ const (
 	IfStatement               = "IfStatement"
 	LogicalExpression         = "LogicalExpression"
 	UnaryExpression           = "UnaryExpression"
+	WhileStatement            = "WhileStatement"
+	ForStatement              = "ForStatement"
 )
 
 type Node map[string]interface{}
@@ -161,6 +163,15 @@ func NewUnaryExpression(start int, end int, operator string, argument Node) Node
 	n["operator"] = operator
 	n["argument"] = argument
 	n["prefix"] = true
+
+	return n
+}
+
+func NewWhileStatement(start int, end int, test Node, body Node) Node {
+	n := NewNode(WhileStatement, start, end)
+
+	n["test"] = test
+	n["body"] = body
 
 	return n
 }

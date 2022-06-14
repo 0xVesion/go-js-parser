@@ -210,3 +210,9 @@ func TestUnarityExpressionParity(t *testing.T) {
 	test(t, `!true;`)
 	test(t, `!!true;`)
 }
+
+func TestLoops(t *testing.T) {
+	test(t, `while (i > 0) {
+		i-=1;
+	}`)
+}

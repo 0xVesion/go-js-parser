@@ -38,6 +38,7 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
 // 	| EmptyStatement
 // 	| VariableDeclaration
 // 	| IfStatement
+// 	| WhileStatement
 // 	;
 func (p *parser) statement() Node {
 	switch p.lookAhead.Type {
@@ -49,6 +50,12 @@ func (p *parser) statement() Node {
 		return p.variableDeclaration()
 	case tokenizer.IfKeyword:
 		return p.ifStatement()
+	case tokenizer.WhileKeyword:
+		fallthrough
+	case tokenizer.DoKeyword:
+		fallthrough
+	case tokenizer.ForKeyword:
+		return p.iterationStatement()
 	default:
 		return p.expressionStatment()
 	}
@@ -74,6 +81,37 @@ func (p *parser) ifStatement() Node {
 	alternate := p.statement()
 
 	return NewIfStatement(start, alternate.End(), test, consequent, alternate)
+}
+
+// IterationStatement
+// 	: WhileStatment
+// 	| DoWhileStatement
+// 	| ForStatement
+// 	;
+func (p *parser) iterationStatement() Node {
+	switch p.lookAhead.Type {
+	case tokenizer.WhileKeyword:
+		return p.whileStatement()
+	case tokenizer.DoKeyword:
+		panic("Unimplemented")
+	case tokenizer.ForKeyword:
+		panic("Unimplemented")
+	}
+
+	panic("invalid look ahead for iteration statement")
+}
+
+// WhileStatement
+//	: 'while' ParenthesizedExpression Statement
+// 	;
+func (p *parser) whileStatement() Node {
+	start := p.consume(tokenizer.WhileKeyword).Start
+
+	test := p.parenthesizedExpression()
+
+	body := p.statement()
+
+	return NewWhileStatement(start, body.End(), test, body)
 }
 
 // VariableDeclaration
