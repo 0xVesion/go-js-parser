@@ -175,3 +175,14 @@ func NewWhileStatement(start int, end int, test Node, body Node) Node {
 
 	return n
 }
+
+func NewForStatement(start int, end int, init Node, test Node, update Node, body Node) Node {
+	n := NewNode(ForStatement, start, end)
+
+	n["init"] = init
+	n["test"] = test
+	n["update"] = update
+	n["body"] = body
+
+	return n
+}

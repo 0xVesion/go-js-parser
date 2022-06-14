@@ -215,4 +215,12 @@ func TestLoops(t *testing.T) {
 	test(t, `while (i > 0) {
 		i-=1;
 	}`)
+
+	test(t, `for (let i = 0; i < 10; i+=1) {
+		result = 10;
+	}`)
+
+	test(t, `for (;;) {
+		result = 10;
+	}`)
 }

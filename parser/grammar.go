@@ -95,10 +95,40 @@ func (p *parser) iterationStatement() Node {
 	case tokenizer.DoKeyword:
 		panic("Unimplemented")
 	case tokenizer.ForKeyword:
-		panic("Unimplemented")
+		return p.forStatement()
 	}
 
 	panic("invalid look ahead for iteration statement")
+}
+
+// ForStatement
+//	: 'for' '(' ForStatementInit ';' Expression ';' Expression ')' Statement
+//	;
+func (p *parser) forStatement() Node {
+	start := p.consume(tokenizer.ForKeyword).Start
+	p.consume(tokenizer.OpeningParenthesis)
+
+	var init Node
+	if !p.lookAhead.Is(tokenizer.Semicolon) {
+		init = p.variableDeclarationInit()
+	}
+	p.consume(tokenizer.Semicolon)
+
+	var test Node
+	if !p.lookAhead.Is(tokenizer.Semicolon) {
+		test = p.expression()
+	}
+	p.consume(tokenizer.Semicolon)
+
+	var update Node
+	if !p.lookAhead.Is(tokenizer.ClosingParenthesis) {
+		update = p.expression()
+	}
+	p.consume(tokenizer.ClosingParenthesis)
+
+	body := p.statement()
+
+	return NewForStatement(start, body.End(), init, test, update, body)
 }
 
 // WhileStatement
@@ -114,15 +144,26 @@ func (p *parser) whileStatement() Node {
 	return NewWhileStatement(start, body.End(), test, body)
 }
 
-// VariableDeclaration
-// 	: VARIABLE_DECLARATION_KEYWORD VariableDeclaratorList ';'
+// VariableDeclarationInit
+// 	: VARIABLE_DECLARATION_KEYWORD VariableDeclaratorList
 // 	;
-func (p *parser) variableDeclaration() Node {
+func (p *parser) variableDeclarationInit() Node {
 	kind := p.consume(tokenizer.VariableDeclarationKeyword)
 	declarations := p.variableDeclaratorList()
-	end := p.consume(tokenizer.Semicolon).End
+	end := declarations[len(declarations)-1].End()
 
 	return NewVariableDeclaration(kind.Start, end, kind.Value, declarations)
+}
+
+// VariableDeclaration
+// 	: VariableDeclarationInit ';'
+// 	;
+func (p *parser) variableDeclaration() Node {
+	init := p.variableDeclarationInit()
+	end := p.consume(tokenizer.Semicolon).End
+	init["end"] = end
+
+	return init
 }
 
 // VariableDeclaratorList
