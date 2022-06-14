@@ -161,7 +161,7 @@ func (p *parser) variableDeclarationInit() Node {
 func (p *parser) variableDeclaration() Node {
 	init := p.variableDeclarationInit()
 	end := p.consume(tokenizer.Semicolon).End
-	init["end"] = end
+	init.SetEnd(end)
 
 	return init
 }

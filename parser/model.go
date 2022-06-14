@@ -34,6 +34,10 @@ func (n Node) End() int {
 	return n["end"].(int)
 }
 
+func (n Node) SetEnd(end int) {
+	n["end"] = end
+}
+
 func NewNode(t Type, start int, end int) Node {
 	return Node{
 		"type":  t,
@@ -81,6 +85,10 @@ type ExpressionStatementNode Node
 
 func (n ExpressionStatementNode) Expression() Node {
 	return n["expression"].(Node)
+}
+
+func (n ExpressionStatementNode) SetDirective(directive string) {
+	n["directive"] = directive
 }
 
 func NewExpressionStatement(start int, end int, expression Node) Node {
