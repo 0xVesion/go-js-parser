@@ -18,6 +18,7 @@ const (
 	UnaryExpression           = "UnaryExpression"
 	WhileStatement            = "WhileStatement"
 	ForStatement              = "ForStatement"
+	DoWhileStatement          = "DoWhileStatement"
 )
 
 type Node map[string]interface{}
@@ -190,6 +191,15 @@ func NewForStatement(start int, end int, init Node, test Node, update Node, body
 	n["init"] = init
 	n["test"] = test
 	n["update"] = update
+	n["body"] = body
+
+	return n
+}
+
+func NewDoWhileStatement(start int, end int, test Node, body Node) Node {
+	n := NewNode(DoWhileStatement, start, end)
+
+	n["test"] = test
 	n["body"] = body
 
 	return n

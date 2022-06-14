@@ -93,7 +93,7 @@ func (p *parser) iterationStatement() Node {
 	case tokenizer.WhileKeyword:
 		return p.whileStatement()
 	case tokenizer.DoKeyword:
-		panic("Unimplemented")
+		return p.doWhileStatement()
 	case tokenizer.ForKeyword:
 		return p.forStatement()
 	}
@@ -129,6 +129,23 @@ func (p *parser) forStatement() Node {
 	body := p.statement()
 
 	return NewForStatement(start, body.End(), init, test, update, body)
+}
+
+// DoWhileStatement
+//	: 'do' Statement 'while' ParenthesizedExpression ';'
+// 	;
+func (p *parser) doWhileStatement() Node {
+	start := p.consume(tokenizer.DoKeyword).Start
+
+	body := p.statement()
+
+	p.consume(tokenizer.WhileKeyword)
+
+	test := p.parenthesizedExpression()
+
+	end := p.consume(tokenizer.Semicolon).End
+
+	return NewDoWhileStatement(start, end, test, body)
 }
 
 // WhileStatement

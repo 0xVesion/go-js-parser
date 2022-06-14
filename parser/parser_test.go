@@ -223,4 +223,8 @@ func TestLoops(t *testing.T) {
 	test(t, `for (;;) {
 		result = 10;
 	}`)
+
+	test(t, `do {
+		i-=1;
+	} while (i > 0);`)
 }
