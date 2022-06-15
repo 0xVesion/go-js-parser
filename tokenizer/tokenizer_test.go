@@ -120,6 +120,7 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `while`, []Token{{WhileKeyword, `while`, 0, 5}})
 	tokenizerTest(t, `do`, []Token{{DoKeyword, `do`, 0, 2}})
 	tokenizerTest(t, `for`, []Token{{ForKeyword, `for`, 0, 3}})
+	tokenizerTest(t, `function`, []Token{{FunctionKeyword, `function`, 0, 8}})
 }
 
 func TestRelationalOperators(t *testing.T) {

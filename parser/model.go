@@ -19,6 +19,7 @@ const (
 	WhileStatement            = "WhileStatement"
 	ForStatement              = "ForStatement"
 	DoWhileStatement          = "DoWhileStatement"
+	FunctionDeclaration       = "FunctionDeclaration"
 )
 
 type Node map[string]interface{}
@@ -200,6 +201,19 @@ func NewDoWhileStatement(start int, end int, test Node, body Node) Node {
 	n := NewNode(DoWhileStatement, start, end)
 
 	n["test"] = test
+	n["body"] = body
+
+	return n
+}
+
+func NewFunctionDeclaration(start int, end int, id Node, params []Node, body Node) Node {
+	n := NewNode(FunctionDeclaration, start, end)
+
+	n["id"] = id
+	n["expression"] = false
+	n["async"] = false
+	n["generator"] = false
+	n["params"] = params
 	n["body"] = body
 
 	return n

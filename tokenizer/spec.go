@@ -30,6 +30,7 @@ const (
 	WhileKeyword                    = "WhileKeyword"
 	DoKeyword                       = "DoKeyword"
 	ForKeyword                      = "ForKeyword"
+	FunctionKeyword                 = "FunctionKeyword"
 )
 
 type specEntry struct {
@@ -62,6 +63,7 @@ var spec = []specEntry{
 	{WhileKeyword, []string{`\bwhile\b`}},
 	{DoKeyword, []string{`\bdo\b`}},
 	{ForKeyword, []string{`\bfor\b`}},
+	{FunctionKeyword, []string{`\bfunction\b`}},
 	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},

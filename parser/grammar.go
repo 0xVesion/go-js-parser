@@ -56,9 +56,46 @@ func (p *parser) statement() Node {
 		fallthrough
 	case tokenizer.ForKeyword:
 		return p.iterationStatement()
+	case tokenizer.FunctionKeyword:
+		return p.functionDeclaration()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// FunctionDeclaration
+// 	: 'function' Identifier '(' OptParameterList ')' BlockStatement
+// 	;
+func (p *parser) functionDeclaration() Node {
+	start := p.consume(tokenizer.FunctionKeyword).Start
+
+	id := p.identifier()
+
+	p.consume(tokenizer.OpeningParenthesis)
+	params := []Node{}
+	if p.lookAhead.Not(tokenizer.ClosingParenthesis) {
+		params = p.parameterList()
+	}
+	p.consume(tokenizer.ClosingParenthesis)
+
+	body := p.blockStatement()
+
+	return NewFunctionDeclaration(start, body.End(), id, params, body)
+}
+
+// ParameterList
+// 	: Identifier
+//	| ParameterList ',' Identifier
+// 	;
+func (p *parser) parameterList() []Node {
+	ids := []Node{p.identifier()}
+
+	for p.lookAhead.Is(tokenizer.Comma) {
+		p.consume(tokenizer.Comma)
+		ids = append(ids, p.identifier())
+	}
+
+	return ids
 }
 
 // IfStatement

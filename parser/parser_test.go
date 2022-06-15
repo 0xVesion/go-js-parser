@@ -228,3 +228,13 @@ func TestLoops(t *testing.T) {
 		i-=1;
 	} while (i > 0);`)
 }
+
+func TestFunctions(t *testing.T) {
+	test(t, `function test(a, b, c) {
+		result = 123;
+	}`)
+
+	test(t, `function noArgs() {
+		result = "i don't have any args";
+	}`)
+}
