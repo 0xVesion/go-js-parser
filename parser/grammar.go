@@ -58,9 +58,27 @@ func (p *parser) statement() Node {
 		return p.iterationStatement()
 	case tokenizer.FunctionKeyword:
 		return p.functionDeclaration()
+	case tokenizer.ReturnKeyword:
+		return p.returnStatement()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// ReturnStatement
+// 	: 'return' OptExpression ';'
+// 	;
+func (p *parser) returnStatement() Node {
+	start := p.consume(tokenizer.ReturnKeyword).Start
+
+	var argument Node
+	if p.lookAhead.Not(tokenizer.Semicolon) {
+		argument = p.expression()
+	}
+
+	end := p.consume(tokenizer.Semicolon).End
+
+	return NewReturnStatement(start, end, argument)
 }
 
 // FunctionDeclaration

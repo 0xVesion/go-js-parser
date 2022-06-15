@@ -31,6 +31,7 @@ const (
 	DoKeyword                       = "DoKeyword"
 	ForKeyword                      = "ForKeyword"
 	FunctionKeyword                 = "FunctionKeyword"
+	ReturnKeyword                   = "ReturnKeyword"
 )
 
 type specEntry struct {
@@ -64,6 +65,7 @@ var spec = []specEntry{
 	{DoKeyword, []string{`\bdo\b`}},
 	{ForKeyword, []string{`\bfor\b`}},
 	{FunctionKeyword, []string{`\bfunction\b`}},
+	{ReturnKeyword, []string{`\breturn\b`}},
 	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},

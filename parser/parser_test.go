@@ -235,6 +235,14 @@ func TestFunctions(t *testing.T) {
 	}`)
 
 	test(t, `function noArgs() {
-		result = "i don't have any args";
+		return "i don't have any args";
+	}`)
+
+	test(t, `function square(x) {
+		return x * x;
+	}`)
+
+	test(t, `function optExpr(x) {
+		return;
 	}`)
 }

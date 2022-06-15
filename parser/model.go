@@ -20,6 +20,7 @@ const (
 	ForStatement              = "ForStatement"
 	DoWhileStatement          = "DoWhileStatement"
 	FunctionDeclaration       = "FunctionDeclaration"
+	ReturnStatement           = "ReturnStatement"
 )
 
 type Node map[string]interface{}
@@ -215,6 +216,14 @@ func NewFunctionDeclaration(start int, end int, id Node, params []Node, body Nod
 	n["generator"] = false
 	n["params"] = params
 	n["body"] = body
+
+	return n
+}
+
+func NewReturnStatement(start int, end int, argument Node) Node {
+	n := NewNode(ReturnStatement, start, end)
+
+	n["argument"] = argument
 
 	return n
 }

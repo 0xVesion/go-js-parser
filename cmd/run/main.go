@@ -9,11 +9,9 @@ import (
 )
 
 func main() {
-	ast, err := parser.New(tokenizer.New(`
-	1+1;
-	2+2*2;
-	"Hello World!";
-	`)).Parse()
+	ast, err := parser.New(tokenizer.New(`function test(a, b, c) {
+		result = 123;
+	}`)).Parse()
 	if err != nil {
 		panic(err)
 	}
