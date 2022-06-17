@@ -134,10 +134,10 @@ func (p *parser) consumeAny() tokenizer.Token {
 
 func (p *parser) addDirectives(sl []Node) []Node {
 	for k, v := range sl {
-		if v.Type() == ExpressionStatement {
+		if v.Is(ExpressionStatement) {
 			statement := ExpressionStatementNode(v)
 			exp := statement.Expression()
-			if exp.Type() == Literal {
+			if exp.Is(Literal) {
 				value := LiteralNode(exp).Value()
 				if str, ok := value.(string); ok {
 					statement.SetDirective(str)

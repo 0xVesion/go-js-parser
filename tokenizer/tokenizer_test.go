@@ -143,3 +143,12 @@ func TestLogicalOperators(t *testing.T) {
 	tokenizerTest(t, `&&`, []Token{{LogicalAndOperator, `&&`, 0, 2}})
 	tokenizerTest(t, `!`, []Token{{LogicalNotOperator, `!`, 0, 1}})
 }
+
+func TestRecognizesDot(t *testing.T) {
+	tokenizerTest(t, `.`, []Token{{Dot, `.`, 0, 1}})
+}
+
+func TestRecognizesBrackets(t *testing.T) {
+	tokenizerTest(t, `[`, []Token{{OpeningBracket, `[`, 0, 1}})
+	tokenizerTest(t, `]`, []Token{{ClosingBracket, `]`, 0, 1}})
+}

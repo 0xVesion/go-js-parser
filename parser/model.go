@@ -21,6 +21,7 @@ const (
 	DoWhileStatement          = "DoWhileStatement"
 	FunctionDeclaration       = "FunctionDeclaration"
 	ReturnStatement           = "ReturnStatement"
+	MemberExpression          = "MemberExpression"
 )
 
 type Node map[string]interface{}
@@ -39,6 +40,20 @@ func (n Node) End() int {
 
 func (n Node) SetEnd(end int) {
 	n["end"] = end
+}
+
+func (n Node) Is(types ...Type) bool {
+	for _, t := range types {
+		if n.Type() == t {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (n Node) Not(types ...Type) bool {
+	return !n.Is(types...)
 }
 
 func NewNode(t Type, start int, end int) Node {
@@ -224,6 +239,16 @@ func NewReturnStatement(start int, end int, argument Node) Node {
 	n := NewNode(ReturnStatement, start, end)
 
 	n["argument"] = argument
+
+	return n
+}
+
+func NewMemberExpression(start int, end int, object Node, property Node, computed bool) Node {
+	n := NewNode(MemberExpression, start, end)
+
+	n["object"] = object
+	n["property"] = property
+	n["computed"] = computed
 
 	return n
 }

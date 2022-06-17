@@ -246,3 +246,12 @@ func TestFunctions(t *testing.T) {
 		return;
 	}`)
 }
+
+func TestMemberExpressions(t *testing.T) {
+	test(t, `x.y;`)
+	test(t, `x.y.z;`)
+	test(t, `x.y['test'];`)
+	test(t, `x.y = 2;`)
+	test(t, `x[0] = 2;`)
+	test(t, `x.z.y['test'];`)
+}

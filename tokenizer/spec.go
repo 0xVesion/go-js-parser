@@ -32,6 +32,9 @@ const (
 	ForKeyword                      = "ForKeyword"
 	FunctionKeyword                 = "FunctionKeyword"
 	ReturnKeyword                   = "ReturnKeyword"
+	Dot                             = "Dot"
+	OpeningBracket                  = "OpeningBracket"
+	ClosingBracket                  = "ClosingBracket"
 )
 
 type specEntry struct {
@@ -47,6 +50,9 @@ var spec = []specEntry{
 	{Comma, []string{`,`}},
 	{OpeningCurlyBrace, []string{`{`}},
 	{ClosingCurlyBrace, []string{`}`}},
+	{Dot, []string{`\.`}},
+	{OpeningBracket, []string{`\[`}},
+	{ClosingBracket, []string{`\]`}},
 	{LogicalOrOperator, []string{`\|\|`}},
 	{LogicalAndOperator, []string{`&&`}},
 	{EqualityOperator, []string{`[!=]==?`}},

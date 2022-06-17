@@ -322,7 +322,7 @@ func (p *parser) assignmentExpression() Node {
 		return left
 	}
 
-	if left.Type() != Identifier {
+	if left.Not(Identifier, MemberExpression) {
 		panic(fmt.Errorf("invalid left-hand side expression: %v", left))
 	}
 
@@ -425,10 +425,37 @@ func (p *parser) unaryExpression() Node {
 }
 
 // LeftHandSideExpression
-// 	: PrimaryExpression
+// 	: MemberExpression
 //	;
 func (p *parser) leftHandSideExpression() Node {
-	return p.primaryExpression()
+	return p.memberExpression()
+}
+
+// MemberExpression
+// 	: PrimaryExpression
+// 	| MemberExpression '.' Identifier
+// 	| MemberExpression '[' Expression ']'
+//	;
+func (p *parser) memberExpression() Node {
+	object := p.primaryExpression()
+
+	for p.lookAhead.Is(tokenizer.Dot, tokenizer.OpeningBracket) {
+		if p.lookAhead.Is(tokenizer.Dot) {
+			p.consume(tokenizer.Dot)
+			property := p.identifier()
+
+			object = NewMemberExpression(object.Start(), property.End(), object, property, false)
+		} else {
+			p.consume(tokenizer.OpeningBracket)
+			property := p.expression()
+			end := p.consume(tokenizer.ClosingBracket).End
+
+			object = NewMemberExpression(object.Start(), end, object, property, true)
+		}
+
+	}
+
+	return object
 }
 
 // PrimaryExpression
