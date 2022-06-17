@@ -255,3 +255,11 @@ func TestMemberExpressions(t *testing.T) {
 	test(t, `x[0] = 2;`)
 	test(t, `x.z.y['test'];`)
 }
+
+func TestCallExpression(t *testing.T) {
+	test(t, `test();`)
+	test(t, `test('12343');`)
+	test(t, `test('12343', 321);`)
+	test(t, `console.log('1235');`)
+	test(t, `log()();`)
+}

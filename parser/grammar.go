@@ -425,10 +425,45 @@ func (p *parser) unaryExpression() Node {
 }
 
 // LeftHandSideExpression
-// 	: MemberExpression
+// 	: CallExpression
 //	;
 func (p *parser) leftHandSideExpression() Node {
-	return p.memberExpression()
+	return p.callExpression()
+}
+
+// CallExpression
+// 	: MemberExpression
+//  | CallExpression '(' OptArgumentList ')'
+//	;
+func (p *parser) callExpression() Node {
+	callee := p.memberExpression()
+
+	for p.lookAhead.Is(tokenizer.OpeningParenthesis) {
+		p.consume(tokenizer.OpeningParenthesis)
+		arguments := []Node{}
+		if p.lookAhead.Not(tokenizer.ClosingParenthesis) {
+			arguments = p.argumentList()
+		}
+		end := p.consume(tokenizer.ClosingParenthesis).End
+
+		callee = NewCallExpression(callee.Start(), end, callee, arguments)
+	}
+
+	return callee
+}
+
+// ArgumentList
+//	: Expression
+//	| ArgumentList ',' Expression
+func (p *parser) argumentList() []Node {
+	arguments := []Node{p.expression()}
+
+	for p.lookAhead.Is(tokenizer.Comma) {
+		p.consume(tokenizer.Comma)
+		arguments = append(arguments, p.expression())
+	}
+
+	return arguments
 }
 
 // MemberExpression

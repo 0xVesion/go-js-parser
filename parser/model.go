@@ -22,6 +22,7 @@ const (
 	FunctionDeclaration       = "FunctionDeclaration"
 	ReturnStatement           = "ReturnStatement"
 	MemberExpression          = "MemberExpression"
+	CallExpression            = "CallExpression"
 )
 
 type Node map[string]interface{}
@@ -249,6 +250,15 @@ func NewMemberExpression(start int, end int, object Node, property Node, compute
 	n["object"] = object
 	n["property"] = property
 	n["computed"] = computed
+
+	return n
+}
+
+func NewCallExpression(start int, end int, callee Node, arguments []Node) Node {
+	n := NewNode(CallExpression, start, end)
+
+	n["callee"] = callee
+	n["arguments"] = arguments
 
 	return n
 }
