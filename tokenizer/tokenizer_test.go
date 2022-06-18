@@ -122,6 +122,10 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `for`, []Token{{ForKeyword, `for`, 0, 3}})
 	tokenizerTest(t, `function`, []Token{{FunctionKeyword, `function`, 0, 8}})
 	tokenizerTest(t, `return`, []Token{{ReturnKeyword, `return`, 0, 6}})
+	tokenizerTest(t, `class`, []Token{{ClassKeyword, `class`, 0, 5}})
+	tokenizerTest(t, `new`, []Token{{NewKeyword, `new`, 0, 3}})
+	tokenizerTest(t, `this`, []Token{{ThisKeyword, `this`, 0, 4}})
+	tokenizerTest(t, `extends`, []Token{{ExtendsKeyword, `extends`, 0, 7}})
 }
 
 func TestRelationalOperators(t *testing.T) {

@@ -35,6 +35,10 @@ const (
 	Dot                             = "Dot"
 	OpeningBracket                  = "OpeningBracket"
 	ClosingBracket                  = "ClosingBracket"
+	ClassKeyword                    = "ClassKeyword"
+	NewKeyword                      = "NewKeyword"
+	ThisKeyword                     = "ThisKeyword"
+	ExtendsKeyword                  = "ExtendsKeyword"
 )
 
 type specEntry struct {
@@ -72,6 +76,10 @@ var spec = []specEntry{
 	{ForKeyword, []string{`\bfor\b`}},
 	{FunctionKeyword, []string{`\bfunction\b`}},
 	{ReturnKeyword, []string{`\breturn\b`}},
+	{ClassKeyword, []string{`\bclass\b`}},
+	{NewKeyword, []string{`\bnew\b`}},
+	{ThisKeyword, []string{`\bthis\b`}},
+	{ExtendsKeyword, []string{`\bextends\b`}},
 	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},

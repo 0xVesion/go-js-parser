@@ -23,6 +23,11 @@ const (
 	ReturnStatement           = "ReturnStatement"
 	MemberExpression          = "MemberExpression"
 	CallExpression            = "CallExpression"
+	ClassDeclaration          = "ClassDeclaration"
+	ClassBody                 = "ClassBody"
+	PropertyDefinition        = "PropertyDefinition"
+	MethodDefinition          = "MethodDefinition"
+	FunctionExpression        = "FunctionExpression"
 )
 
 type Node map[string]interface{}
@@ -259,6 +264,57 @@ func NewCallExpression(start int, end int, callee Node, arguments []Node) Node {
 
 	n["callee"] = callee
 	n["arguments"] = arguments
+
+	return n
+}
+
+func NewClassDeclaration(start int, end int, id Node, superClass Node, body Node) Node {
+	n := NewNode(ClassDeclaration, start, end)
+
+	n["id"] = id
+	n["superClass"] = superClass
+	n["body"] = body
+
+	return n
+}
+
+func NewClassBody(start int, end int, body []Node) Node {
+	n := NewNode(ClassBody, start, end)
+
+	n["body"] = body
+
+	return n
+}
+
+func NewPropertyDefinition(start int, end int, key Node, value Node) Node {
+	n := NewNode(PropertyDefinition, start, end)
+
+	n["static"] = false
+	n["key"] = key
+	n["value"] = value
+
+	return n
+}
+
+func NewMethodDefinition(start int, end int, key Node, value Node) Node {
+	n := NewNode(MethodDefinition, start, end)
+
+	n["static"] = false
+	n["kind"] = "constructor"
+	n["key"] = key
+	n["value"] = value
+
+	return n
+}
+
+func NewFunctionExpression(start int, end int, body Node) Node {
+	n := NewNode(FunctionExpression, start, end)
+
+	n["expression"] = false
+	n["generator"] = false
+	n["async"] = false
+	n["params"] = []Node{}
+	n["body"] = body
 
 	return n
 }

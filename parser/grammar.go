@@ -38,7 +38,10 @@ func (p *parser) statementList(endLookahead tokenizer.Type) []Node {
 // 	| EmptyStatement
 // 	| VariableDeclaration
 // 	| IfStatement
-// 	| WhileStatement
+// 	| Iterationtatement
+// 	| FunctionDeclaration
+// 	| ReturnStatement
+// 	| ClassDeclaration
 // 	;
 func (p *parser) statement() Node {
 	switch p.lookAhead.Type {
@@ -60,9 +63,65 @@ func (p *parser) statement() Node {
 		return p.functionDeclaration()
 	case tokenizer.ReturnKeyword:
 		return p.returnStatement()
+	case tokenizer.ClassKeyword:
+		return p.classDeclaration()
 	default:
 		return p.expressionStatment()
 	}
+}
+
+// ClassDeclaration
+// 	: 'class' Identifier ClassBody
+// 	| 'class' Identifier 'extends' Identifier ClassBody
+// 	;
+func (p *parser) classDeclaration() Node {
+	start := p.consume(tokenizer.ClassKeyword).Start
+
+	id := p.identifier()
+	var superClass Node
+	if p.lookAhead.Is(tokenizer.ExtendsKeyword) {
+		p.consume(tokenizer.ExtendsKeyword)
+		superClass = p.identifier()
+	}
+
+	body := p.classBody()
+
+	return NewClassDeclaration(start, body.End(), id, superClass, body)
+}
+
+// ClassBody
+// 	: '{' OptClassMemberDefinitionList '}'
+// 	;
+func (p *parser) classBody() Node {
+	start := p.consume(tokenizer.OpeningCurlyBrace).Start
+
+	body := []Node{}
+	for p.lookAhead.Not(tokenizer.ClosingCurlyBrace) {
+		body = append(body, p.classMemberDefinition())
+	}
+
+	end := p.consume(tokenizer.ClosingCurlyBrace).End
+
+	return NewClassBody(start, end, body)
+}
+
+// ClassMemberDefinition
+// 	: NewPropertyDefinition
+// 	| NewMethodDefinition
+// 	;
+func (p *parser) classMemberDefinition() Node {
+	key := p.identifier()
+
+	var value Node
+	if p.lookAhead.Is(tokenizer.SimpleAssignmentOperator) {
+		p.consume(tokenizer.SimpleAssignmentOperator)
+
+		value = p.expression()
+	}
+
+	end := p.consume(tokenizer.Semicolon).End
+
+	return NewPropertyDefinition(key.Start(), end, key, value)
 }
 
 // ReturnStatement

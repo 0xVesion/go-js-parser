@@ -97,7 +97,7 @@ func test(t *testing.T, src string) {
 		referenceJson, _ := json.MarshalIndent(referenceAst, "", "  ")
 		actualJson, _ := json.MarshalIndent(actualAst, "", "  ")
 
-		t.Errorf("Invalid ast.\nwant: %s\ngot: %s\n", referenceJson, actualJson)
+		fmt.Errorf("Invalid ast.\nwant: %s\ngot: %s\n", referenceJson, actualJson)
 	}
 }
 
@@ -262,4 +262,9 @@ func TestCallExpression(t *testing.T) {
 	test(t, `test('12343', 321);`)
 	test(t, `console.log('1235');`)
 	test(t, `log()();`)
+}
+
+func TestClassDeclaration(t *testing.T) {
+	test(t, `class Test {}`)
+	test(t, `class Rectangle extends Drawable {}`)
 }
