@@ -264,6 +264,7 @@ func NewCallExpression(start int, end int, callee Node, arguments []Node) Node {
 
 	n["callee"] = callee
 	n["arguments"] = arguments
+	n["optional"] = false
 
 	return n
 }

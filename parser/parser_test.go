@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"reflect"
@@ -25,33 +24,37 @@ func hash(s string) string {
 	return hex.EncodeToString(hash)
 }
 
-func cache(src string, producer func(string) []byte) []byte {
+func cache(src string, producer func(string) ([]byte, error)) ([]byte, error) {
 	path := fmt.Sprintf("/tmp/%s", hash(src))
 
 	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 		bytes, err := os.ReadFile(path)
 		if err != nil {
-			panic(err)
+			return []byte{}, err
 		}
 
-		return bytes
+		return bytes, nil
 	}
 
-	bytes := producer(src)
-	err := os.WriteFile(path, bytes, os.ModePerm)
+	bytes, err := producer(src)
 	if err != nil {
-		panic(err)
+		return []byte{}, err
 	}
 
-	return bytes
+	err = os.WriteFile(path, bytes, os.ModePerm)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return bytes, nil
 }
 
-func acornRaw(exp string) []byte {
-	cmd := exec.Command("npx", "acorn", "--ecma9")
+func acornRaw(exp string) ([]byte, error) {
+	cmd := exec.Command("npx", "acorn", "--ecma13")
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		log.Fatal(err)
+		return []byte{}, err
 	}
 
 	go func() {
@@ -61,43 +64,66 @@ func acornRaw(exp string) []byte {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		return []byte{}, err
 	}
 
-	return out
+	return out, err
 }
 
-func acorn(exp string) interface{} {
-	out := cache(exp, acornRaw)
+func acorn(exp string) (interface{}, error) {
+	out, err := cache(exp, acornRaw)
+	if err != nil {
+		return nil, err
+	}
 
 	x := &map[string]interface{}{}
 
-	json.Unmarshal(out, x)
+	err = json.Unmarshal(out, x)
+	if err != nil {
+		return nil, err
+	}
 
-	return x
+	return x, nil
 }
 
-func goParser(src string) interface{} {
+func goParser(src string) (interface{}, error) {
 	actualAst, err := parser.New(tokenizer.New(src)).Parse()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	actualAstJson, _ := json.MarshalIndent(actualAst, "", "  ")
 	x := &map[string]interface{}{}
-	json.Unmarshal(actualAstJson, x)
+	err = json.Unmarshal(actualAstJson, x)
+	if err != nil {
+		return nil, err
+	}
 
-	return x
+	return x, nil
 }
 
 func test(t *testing.T, src string) {
-	referenceAst := acorn(src)
-	actualAst := goParser(src)
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatal(r)
+		}
+	}()
+
+	referenceAst, err := acorn(src)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	actualAst, err := goParser(src)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	if !reflect.DeepEqual(referenceAst, actualAst) {
 		referenceJson, _ := json.MarshalIndent(referenceAst, "", "  ")
 		actualJson, _ := json.MarshalIndent(actualAst, "", "  ")
 
-		fmt.Errorf("Invalid ast.\nwant: %s\ngot: %s\n", referenceJson, actualJson)
+		t.Errorf("Invalid ast.\nwant: %s\ngot: %s\n", referenceJson, actualJson)
 	}
 }
 
