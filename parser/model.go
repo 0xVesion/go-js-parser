@@ -310,8 +310,10 @@ func NewPropertyDefinition(start int, end int, key Node, value Node) Node {
 type MethodDefinitionKind string
 
 const (
-	Constructor MethodDefinitionKind = "constructor"
-	Method      MethodDefinitionKind = "method"
+	Method            MethodDefinitionKind = "method"
+	ConstructorMethod MethodDefinitionKind = "constructor"
+	SetMethod         MethodDefinitionKind = "set"
+	GetMethod         MethodDefinitionKind = "get"
 )
 
 func NewMethodDefinition(start int, end int, key Node, kind MethodDefinitionKind, value Node) Node {

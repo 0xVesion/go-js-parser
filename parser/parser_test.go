@@ -308,6 +308,15 @@ func TestClassDeclaration(t *testing.T) {
 			this.color = color;
 		}
 	}`)
+	test(t, `class Test {
+		set name(str) {
+			this.myName = name;
+		}
+	  
+		get name() {
+			return this.myName;
+		}
+	}`)
 
 	// TOOD: Add support for getters/setters
 	// TODO: Add support for static/async modifiers

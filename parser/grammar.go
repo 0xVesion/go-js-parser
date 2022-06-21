@@ -110,17 +110,35 @@ func (p *parser) classBody() Node {
 // 	| NewMethodDefinition
 // 	;
 func (p *parser) classMemberDefinition() Node {
+	prefixes := []tokenizer.Token{}
+
+	for p.lookAhead.Not(Identifier) {
+		prefixes = append(prefixes, p.consumeAny())
+	}
+
 	key := p.identifier()
+	start := key.Start()
+	hasPrefix := len(prefixes) > 0
+	if hasPrefix {
+		start = prefixes[0].Start
+	}
 
 	if p.lookAhead.Is(tokenizer.OpeningParenthesis) {
 		value := p.functionExpression()
 
 		kind := Method
-		if IdentifierNode(key).Name() == string(Constructor) {
-			kind = Constructor
+		if IdentifierNode(key).Name() == string(ConstructorMethod) {
+			kind = ConstructorMethod
+		} else if hasPrefix {
+			lastPrefix := prefixes[len(prefixes)-1]
+			if lastPrefix.Is(tokenizer.GetKeyword) {
+				kind = GetMethod
+			} else if lastPrefix.Is(tokenizer.SetKeyword) {
+				kind = SetMethod
+			}
 		}
 
-		return NewMethodDefinition(key.Start(), value.End(), key, kind, value)
+		return NewMethodDefinition(start, value.End(), key, kind, value)
 	}
 
 	var value Node
@@ -131,7 +149,7 @@ func (p *parser) classMemberDefinition() Node {
 	}
 
 	end := p.consume(tokenizer.Semicolon).End
-	return NewPropertyDefinition(key.Start(), end, key, value)
+	return NewPropertyDefinition(start, end, key, value)
 }
 
 // FunctionExpression
