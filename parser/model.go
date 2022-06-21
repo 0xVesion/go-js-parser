@@ -28,6 +28,8 @@ const (
 	PropertyDefinition        = "PropertyDefinition"
 	MethodDefinition          = "MethodDefinition"
 	FunctionExpression        = "FunctionExpression"
+	SuperExpression           = "Super"
+	ThisExpression            = "ThisExpression"
 )
 
 type Node map[string]interface{}
@@ -335,4 +337,12 @@ func NewFunctionExpression(start int, end int, params []Node, body Node) Node {
 	n["body"] = body
 
 	return n
+}
+
+func NewSuperExpression(start int, end int) Node {
+	return NewNode(SuperExpression, start, end)
+}
+
+func NewThisExpression(start int, end int) Node {
+	return NewNode(ThisExpression, start, end)
 }

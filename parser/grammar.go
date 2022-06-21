@@ -580,6 +580,8 @@ func (p *parser) memberExpression() Node {
 
 // PrimaryExpression
 // 	: Literal
+//	| SuperExpression
+//	| ThisExpression
 //  | ParenthesizedExpression
 //  | Identifier
 // 	;
@@ -589,6 +591,10 @@ func (p *parser) primaryExpression() Node {
 	}
 
 	switch p.lookAhead.Type {
+	case tokenizer.SuperKeyword:
+		return p.superExpression()
+	case tokenizer.ThisKeyword:
+		return p.thisExpression()
 	case tokenizer.OpeningParenthesis:
 		return p.parenthesizedExpression()
 	case tokenizer.Identifier:
@@ -596,6 +602,24 @@ func (p *parser) primaryExpression() Node {
 	default:
 		panic(fmt.Errorf("invalid token: %s", p.lookAhead.Type))
 	}
+}
+
+// SuperExpression
+// 	: 'super'
+// 	;
+func (p *parser) superExpression() Node {
+	super := p.consume(tokenizer.SuperKeyword)
+
+	return NewSuperExpression(super.Start, super.End)
+}
+
+// ThisExpression
+// 	: 'this'
+// 	;
+func (p *parser) thisExpression() Node {
+	this := p.consume(tokenizer.ThisKeyword)
+
+	return NewThisExpression(this.Start, this.End)
 }
 
 // Identifier

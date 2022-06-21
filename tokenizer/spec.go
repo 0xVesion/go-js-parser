@@ -39,6 +39,7 @@ const (
 	NewKeyword                      = "NewKeyword"
 	ThisKeyword                     = "ThisKeyword"
 	ExtendsKeyword                  = "ExtendsKeyword"
+	SuperKeyword                    = "SuperKeyword"
 )
 
 type specEntry struct {
@@ -80,6 +81,7 @@ var spec = []specEntry{
 	{NewKeyword, []string{`\bnew\b`}},
 	{ThisKeyword, []string{`\bthis\b`}},
 	{ExtendsKeyword, []string{`\bextends\b`}},
+	{SuperKeyword, []string{`\bsuper\b`}},
 	{BooleanLiteral, []string{`\b((true)|(false))\b`}},
 	{NullLiteral, []string{`\bnull\b`}},
 	{Identifier, []string{`[a-zA-Z_$]\w*`}},

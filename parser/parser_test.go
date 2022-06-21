@@ -301,8 +301,14 @@ func TestClassDeclaration(t *testing.T) {
 		constructor(foo, bar) {}
 		test(foo, bar) {}
 	}`)
+	test(t, `class Point extends Vector2D {
+		constructor(x, y, color) {
+			super(x, y);
 
-	// TOOD: Add support for this/super
+			this.color = color;
+		}
+	}`)
+
 	// TOOD: Add support for getters/setters
 	// TODO: Add support for static/async modifiers
 }
