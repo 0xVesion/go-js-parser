@@ -293,4 +293,16 @@ func TestCallExpression(t *testing.T) {
 func TestClassDeclaration(t *testing.T) {
 	test(t, `class Test {}`)
 	test(t, `class Rectangle extends Drawable {}`)
+	test(t, `class Test {
+		test = 123;
+		test2;
+	}`)
+	test(t, `class Test {
+		constructor(foo, bar) {}
+		test(foo, bar) {}
+	}`)
+
+	// TOOD: Add support for this/super
+	// TOOD: Add support for getters/setters
+	// TODO: Add support for static/async modifiers
 }

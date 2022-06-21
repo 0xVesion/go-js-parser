@@ -112,6 +112,17 @@ func (p *parser) classBody() Node {
 func (p *parser) classMemberDefinition() Node {
 	key := p.identifier()
 
+	if p.lookAhead.Is(tokenizer.OpeningParenthesis) {
+		value := p.functionExpression()
+
+		kind := Method
+		if IdentifierNode(key).Name() == string(Constructor) {
+			kind = Constructor
+		}
+
+		return NewMethodDefinition(key.Start(), value.End(), key, kind, value)
+	}
+
 	var value Node
 	if p.lookAhead.Is(tokenizer.SimpleAssignmentOperator) {
 		p.consume(tokenizer.SimpleAssignmentOperator)
@@ -120,8 +131,23 @@ func (p *parser) classMemberDefinition() Node {
 	}
 
 	end := p.consume(tokenizer.Semicolon).End
-
 	return NewPropertyDefinition(key.Start(), end, key, value)
+}
+
+// FunctionExpression
+// 	: '(' OptParameterList ')' BlockStatement
+// 	;
+func (p *parser) functionExpression() Node {
+	start := p.consume(tokenizer.OpeningParenthesis).Start
+	params := []Node{}
+	if p.lookAhead.Not(tokenizer.ClosingParenthesis) {
+		params = p.parameterList()
+	}
+	p.consume(tokenizer.ClosingParenthesis)
+
+	body := p.blockStatement()
+
+	return NewFunctionExpression(start, body.End(), params, body)
 }
 
 // ReturnStatement

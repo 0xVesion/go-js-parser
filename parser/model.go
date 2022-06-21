@@ -133,6 +133,12 @@ func NewBinaryExpression(start int, end int, operator string, left Node, right N
 	return n
 }
 
+type IdentifierNode Node
+
+func (n IdentifierNode) Name() string {
+	return n["name"].(string)
+}
+
 func NewIdentifier(start int, end int, name string) Node {
 	n := NewNode(Identifier, start, end)
 
@@ -292,30 +298,40 @@ func NewPropertyDefinition(start int, end int, key Node, value Node) Node {
 	n := NewNode(PropertyDefinition, start, end)
 
 	n["static"] = false
+	n["computed"] = false
 	n["key"] = key
 	n["value"] = value
 
 	return n
 }
 
-func NewMethodDefinition(start int, end int, key Node, value Node) Node {
+type MethodDefinitionKind string
+
+const (
+	Constructor MethodDefinitionKind = "constructor"
+	Method      MethodDefinitionKind = "method"
+)
+
+func NewMethodDefinition(start int, end int, key Node, kind MethodDefinitionKind, value Node) Node {
 	n := NewNode(MethodDefinition, start, end)
 
 	n["static"] = false
-	n["kind"] = "constructor"
+	n["computed"] = false
+	n["kind"] = kind
 	n["key"] = key
 	n["value"] = value
 
 	return n
 }
 
-func NewFunctionExpression(start int, end int, body Node) Node {
+func NewFunctionExpression(start int, end int, params []Node, body Node) Node {
 	n := NewNode(FunctionExpression, start, end)
 
 	n["expression"] = false
 	n["generator"] = false
 	n["async"] = false
-	n["params"] = []Node{}
+	n["id"] = nil
+	n["params"] = params
 	n["body"] = body
 
 	return n
