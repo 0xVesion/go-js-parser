@@ -30,7 +30,7 @@ func cache(src string, producer func(string) ([]byte, error)) ([]byte, error) {
 	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 		bytes, err := os.ReadFile(path)
 		if err != nil {
-			return []byte{}, err
+			return []byte{}, fmt.Errorf("cannot read file: %w", err)
 		}
 
 		return bytes, nil
@@ -43,7 +43,7 @@ func cache(src string, producer func(string) ([]byte, error)) ([]byte, error) {
 
 	err = os.WriteFile(path, bytes, os.ModePerm)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, fmt.Errorf("cannot write file: %w", err)
 	}
 
 	return bytes, nil
@@ -54,7 +54,7 @@ func acornRaw(exp string) ([]byte, error) {
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, fmt.Errorf("cannot spawn acorn: %w", err)
 	}
 
 	go func() {
@@ -64,10 +64,10 @@ func acornRaw(exp string) ([]byte, error) {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, fmt.Errorf("acorn error: %w", err)
 	}
 
-	return out, err
+	return out, nil
 }
 
 func acorn(exp string) (interface{}, error) {
@@ -80,7 +80,7 @@ func acorn(exp string) (interface{}, error) {
 
 	err = json.Unmarshal(out, x)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot unmarshal acorn result: %w", err)
 	}
 
 	return x, nil
@@ -294,9 +294,30 @@ func TestClassDeclaration(t *testing.T) {
 	test(t, `class Test {}`)
 	test(t, `class Rectangle extends Drawable {}`)
 	test(t, `class Test {
-		test;
+		test = 123;
+		test2;
 	}`)
 	test(t, `class Test {
-	 	test=123;
+		constructor(foo, bar) {}
+		test(foo, bar) {}
 	}`)
+	test(t, `class Point extends Vector2D {
+		constructor(x, y, color) {
+			super(x, y);
+
+			this.color = color;
+		}
+	}`)
+	test(t, `class Test {
+		set name(str) {
+			this.myName = name;
+		}
+	  
+		get name() {
+			return this.myName;
+		}
+	}`)
+
+	// TOOD: Add support for getters/setters
+	// TODO: Add support for static/async modifiers
 }

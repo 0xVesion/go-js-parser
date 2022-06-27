@@ -110,7 +110,36 @@ func (p *parser) classBody() Node {
 // 	| NewMethodDefinition
 // 	;
 func (p *parser) classMemberDefinition() Node {
+	prefixes := []tokenizer.Token{}
+
+	for p.lookAhead.Not(Identifier) {
+		prefixes = append(prefixes, p.consumeAny())
+	}
+
 	key := p.identifier()
+	start := key.Start()
+	hasPrefix := len(prefixes) > 0
+	if hasPrefix {
+		start = prefixes[0].Start
+	}
+
+	if p.lookAhead.Is(tokenizer.OpeningParenthesis) {
+		value := p.functionExpression()
+
+		kind := Method
+		if IdentifierNode(key).Name() == string(ConstructorMethod) {
+			kind = ConstructorMethod
+		} else if hasPrefix {
+			lastPrefix := prefixes[len(prefixes)-1]
+			if lastPrefix.Is(tokenizer.GetKeyword) {
+				kind = GetMethod
+			} else if lastPrefix.Is(tokenizer.SetKeyword) {
+				kind = SetMethod
+			}
+		}
+
+		return NewMethodDefinition(start, value.End(), key, kind, value)
+	}
 
 	var value Node
 	if p.lookAhead.Is(tokenizer.SimpleAssignmentOperator) {
@@ -120,8 +149,23 @@ func (p *parser) classMemberDefinition() Node {
 	}
 
 	end := p.consume(tokenizer.Semicolon).End
+	return NewPropertyDefinition(start, end, key, value)
+}
 
-	return NewPropertyDefinition(key.Start(), end, key, value)
+// FunctionExpression
+// 	: '(' OptParameterList ')' BlockStatement
+// 	;
+func (p *parser) functionExpression() Node {
+	start := p.consume(tokenizer.OpeningParenthesis).Start
+	params := []Node{}
+	if p.lookAhead.Not(tokenizer.ClosingParenthesis) {
+		params = p.parameterList()
+	}
+	p.consume(tokenizer.ClosingParenthesis)
+
+	body := p.blockStatement()
+
+	return NewFunctionExpression(start, body.End(), params, body)
 }
 
 // ReturnStatement
@@ -554,6 +598,8 @@ func (p *parser) memberExpression() Node {
 
 // PrimaryExpression
 // 	: Literal
+//	| SuperExpression
+//	| ThisExpression
 //  | ParenthesizedExpression
 //  | Identifier
 // 	;
@@ -563,6 +609,10 @@ func (p *parser) primaryExpression() Node {
 	}
 
 	switch p.lookAhead.Type {
+	case tokenizer.SuperKeyword:
+		return p.superExpression()
+	case tokenizer.ThisKeyword:
+		return p.thisExpression()
 	case tokenizer.OpeningParenthesis:
 		return p.parenthesizedExpression()
 	case tokenizer.Identifier:
@@ -570,6 +620,24 @@ func (p *parser) primaryExpression() Node {
 	default:
 		panic(fmt.Errorf("invalid token: %s", p.lookAhead.Type))
 	}
+}
+
+// SuperExpression
+// 	: 'super'
+// 	;
+func (p *parser) superExpression() Node {
+	super := p.consume(tokenizer.SuperKeyword)
+
+	return NewSuperExpression(super.Start, super.End)
+}
+
+// ThisExpression
+// 	: 'this'
+// 	;
+func (p *parser) thisExpression() Node {
+	this := p.consume(tokenizer.ThisKeyword)
+
+	return NewThisExpression(this.Start, this.End)
 }
 
 // Identifier

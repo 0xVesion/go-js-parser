@@ -126,6 +126,9 @@ func TestRecognizesKeywords(t *testing.T) {
 	tokenizerTest(t, `new`, []Token{{NewKeyword, `new`, 0, 3}})
 	tokenizerTest(t, `this`, []Token{{ThisKeyword, `this`, 0, 4}})
 	tokenizerTest(t, `extends`, []Token{{ExtendsKeyword, `extends`, 0, 7}})
+	tokenizerTest(t, `super`, []Token{{SuperKeyword, `super`, 0, 5}})
+	tokenizerTest(t, `get`, []Token{{GetKeyword, `get`, 0, 3}})
+	tokenizerTest(t, `set`, []Token{{SetKeyword, `set`, 0, 3}})
 }
 
 func TestRelationalOperators(t *testing.T) {

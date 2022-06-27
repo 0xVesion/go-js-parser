@@ -28,6 +28,8 @@ const (
 	PropertyDefinition        = "PropertyDefinition"
 	MethodDefinition          = "MethodDefinition"
 	FunctionExpression        = "FunctionExpression"
+	SuperExpression           = "Super"
+	ThisExpression            = "ThisExpression"
 )
 
 type Node map[string]interface{}
@@ -131,6 +133,12 @@ func NewBinaryExpression(start int, end int, operator string, left Node, right N
 	n["right"] = right
 
 	return n
+}
+
+type IdentifierNode Node
+
+func (n IdentifierNode) Name() string {
+	return n["name"].(string)
 }
 
 func NewIdentifier(start int, end int, name string) Node {
@@ -299,25 +307,44 @@ func NewPropertyDefinition(start int, end int, key Node, value Node) Node {
 	return n
 }
 
-func NewMethodDefinition(start int, end int, key Node, value Node) Node {
+type MethodDefinitionKind string
+
+const (
+	Method            MethodDefinitionKind = "method"
+	ConstructorMethod MethodDefinitionKind = "constructor"
+	SetMethod         MethodDefinitionKind = "set"
+	GetMethod         MethodDefinitionKind = "get"
+)
+
+func NewMethodDefinition(start int, end int, key Node, kind MethodDefinitionKind, value Node) Node {
 	n := NewNode(MethodDefinition, start, end)
 
 	n["static"] = false
-	n["kind"] = "constructor"
+	n["computed"] = false
+	n["kind"] = kind
 	n["key"] = key
 	n["value"] = value
 
 	return n
 }
 
-func NewFunctionExpression(start int, end int, body Node) Node {
+func NewFunctionExpression(start int, end int, params []Node, body Node) Node {
 	n := NewNode(FunctionExpression, start, end)
 
 	n["expression"] = false
 	n["generator"] = false
 	n["async"] = false
-	n["params"] = []Node{}
+	n["id"] = nil
+	n["params"] = params
 	n["body"] = body
 
 	return n
+}
+
+func NewSuperExpression(start int, end int) Node {
+	return NewNode(SuperExpression, start, end)
+}
+
+func NewThisExpression(start int, end int) Node {
+	return NewNode(ThisExpression, start, end)
 }
