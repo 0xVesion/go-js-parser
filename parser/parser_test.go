@@ -293,4 +293,10 @@ func TestCallExpression(t *testing.T) {
 func TestClassDeclaration(t *testing.T) {
 	test(t, `class Test {}`)
 	test(t, `class Rectangle extends Drawable {}`)
+	test(t, `class Test {
+		test;
+	}`)
+	test(t, `class Test {
+	 	test=123;
+	}`)
 }

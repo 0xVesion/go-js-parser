@@ -252,6 +252,7 @@ func NewReturnStatement(start int, end int, argument Node) Node {
 func NewMemberExpression(start int, end int, object Node, property Node, computed bool) Node {
 	n := NewNode(MemberExpression, start, end)
 
+	n["optional"] = false
 	n["object"] = object
 	n["property"] = property
 	n["computed"] = computed
@@ -291,6 +292,7 @@ func NewPropertyDefinition(start int, end int, key Node, value Node) Node {
 	n := NewNode(PropertyDefinition, start, end)
 
 	n["static"] = false
+	n["computed"] = false
 	n["key"] = key
 	n["value"] = value
 
